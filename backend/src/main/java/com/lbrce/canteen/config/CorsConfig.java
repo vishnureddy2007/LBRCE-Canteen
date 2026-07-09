@@ -9,10 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Permits the React dev server (Vite) and any localhost frontend to call
  * the API. Credentials (session cookie) are allowed.
  */
-@Configuration
+// Disabled to avoid duplicate CORS headers with SecurityConfig's CORS filter
+// @Configuration
 public class CorsConfig {
 
-    @Bean
+    // @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override

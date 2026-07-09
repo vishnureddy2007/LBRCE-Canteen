@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Seeds the database with a default admin and a small but realistic demo
@@ -66,19 +67,27 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private Admin seedAdmin() {
-        return adminRepository.findByUsernameOrEmail("vishnureddy@gmail.com", "vishnureddy@gmail.com")
-                .orElseGet(() -> {
-                    Admin a = new Admin();
-                    a.setUsername("vishnureddy@gmail.com");
-                    a.setEmail("vishnureddy@gmail.com");
-                    a.setPasswordHash(passwordEncoder.encode("Bunny@07"));
-                    a.setFullName("Canteen Administrator");
-                    a.setPhone("9876543210");
-                    a.setRole("ADMIN");
-                    Admin saved = adminRepository.save(a);
-                    log.info("Seeded default admin: vishnureddy@gmail.com / Bunny@07");
-                    return saved;
-                });
+        Optional<Admin> existing = adminRepository.findByUsernameOrEmail("vishnureddy@gmail.com", "vishnureddy@gmail.com");
+        if (existing.isPresent()) {
+            Admin a = existing.get();
+            a.setPasswordHash(passwordEncoder.encode("Bunny@07"));
+            a.setFullName("Canteen Administrator");
+            a.setRole("ADMIN");
+            Admin saved = adminRepository.save(a);
+            log.info("Reset/verified default admin credentials: vishnureddy@gmail.com / Bunny@07");
+            return saved;
+        } else {
+            Admin a = new Admin();
+            a.setUsername("vishnureddy@gmail.com");
+            a.setEmail("vishnureddy@gmail.com");
+            a.setPasswordHash(passwordEncoder.encode("Bunny@07"));
+            a.setFullName("Canteen Administrator");
+            a.setPhone("9876543210");
+            a.setRole("ADMIN");
+            Admin saved = adminRepository.save(a);
+            log.info("Seeded default admin: vishnureddy@gmail.com / Bunny@07");
+            return saved;
+        }
     }
 
     private List<Category> seedCategories() {
