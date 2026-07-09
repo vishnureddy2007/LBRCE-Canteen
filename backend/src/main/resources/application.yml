@@ -1,0 +1,67 @@
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 500
+      min-spare: 20
+    max-connections: 10000
+    accept-count: 200
+  servlet:
+    session:
+      timeout: 24h
+      cookie:
+        name: LBRCESESSION
+        same-site: ${COOKIE_SAME_SITE:lax}
+        secure: ${COOKIE_SECURE:false}
+        http-only: true
+
+spring:
+  application:
+    name: lbrce-canteen-backend
+
+  # MySQL connection. Change these values for your local environment.
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/lbrce_canteen?useSSL=false&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Bunny@07}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      # We use schema.sql as a baseline (for explicit FK names & seed-friendly
+      # dtypes), and let Hibernate 'update' the schema for any columns the
+      # entities added afterwards. This avoids drift between schema.sql and the
+      # entity declarations during active development.
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+# Where uploaded food images are written. Files placed here are served
+# back to the browser via GET /uploads/{filename}.
+app:
+  upload:
+    dir: src/main/resources/static/uploads
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.lbrce.canteen: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN

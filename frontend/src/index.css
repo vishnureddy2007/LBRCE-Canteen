@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Smooth theme transition for common surfaces. */
+body, .card, .navbar, .sidebar {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Brand gradient — used by navbar and primary CTAs. */
+.brand-gradient {
+  background: linear-gradient(90deg, #6366F1 0%, #06B6D4 100%);
+}
+
+/* Scrollbars in dark mode */
+.dark ::-webkit-scrollbar { width: 8px; height: 8px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+.dark ::-webkit-scrollbar-track { background: transparent; }
+
+/* Focus ring accent */
+:focus-visible { outline: 2px solid #06B6D4; outline-offset: 2px; }
