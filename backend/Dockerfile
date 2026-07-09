@@ -1,11 +1,10 @@
-FROM eclipse-temurin:17-jdk AS build
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
 COPY . .
 
-RUN chmod +x mvnw || true
-RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:17-jre
 
