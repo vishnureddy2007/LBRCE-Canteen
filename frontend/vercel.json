@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://canteen-api.onrender.com/api/:path*"
+      "destination": "https://lbrce-canteen-api.onrender.com/api/:path*"
     },
     {
       "source": "/uploads/:path*",
-      "destination": "https://canteen-api.onrender.com/uploads/:path*"
+      "destination": "https://lbrce-canteen-api.onrender.com/uploads/:path*"
     },
     {
       "source": "/(.*)",
