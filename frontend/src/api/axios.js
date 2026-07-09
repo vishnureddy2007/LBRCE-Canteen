@@ -30,7 +30,7 @@ api.interceptors.response.use(
     const err = new Error(msg);
     err.status = status;
     err.errors = body?.errors;
-    if (status === 401) {
+    if (status === 401 && !error.config?.url?.includes('/auth/me') && !error.config?.url?.includes('/auth/login')) {
       // surface auth events for the store to handle
       window.dispatchEvent(new CustomEvent('auth:unauthorized'));
     }
