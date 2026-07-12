@@ -25,7 +25,7 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const me = await api.post('/auth/login', { username, password });
-      set({ user: me, loading: false });
+      set({ user: me, loading: false, initialized: true });
       return me;
     } catch (e) {
       set({ loading: false, error: e.message });
@@ -37,7 +37,7 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const me = await api.post('/auth/signup', payload);
-      set({ user: me, loading: false });
+      set({ user: me, loading: false, initialized: true });
       return me;
     } catch (e) {
       set({ loading: false, error: e.message });

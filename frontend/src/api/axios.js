@@ -3,7 +3,7 @@ import axios from 'axios';
 // Centralized axios instance. withCredentials is required so the session
 // cookie set by Spring Security is sent on cross-origin requests during dev.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: '/api',
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });

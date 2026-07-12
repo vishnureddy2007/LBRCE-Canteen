@@ -6,7 +6,7 @@ import useAuthStore from '../../store/authStore';
  *
  * @param {{roles: string[]}} props
  */
-export default function RoleRoute({ roles }) {
+export default function RoleRoute({ roles, children }) {
   const user = useAuthStore((s) => s.user);
   if (!user) return <Navigate to="/login" replace />;
   if (!roles.includes(user.role)) {
@@ -15,5 +15,5 @@ export default function RoleRoute({ roles }) {
                    : '/student';
     return <Navigate to={fallback} replace />;
   }
-  return <Outlet />;
+  return children ? children : <Outlet />;
 }
