@@ -146,7 +146,7 @@ mysql -u root -p lbrce_canteen < database/seed_data.sql
      datasource:
        url: jdbc:mysql://localhost:3306/lbrce_canteen?useSSL=false&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
        username: root
-       password: Bunny@07
+       password: admin
    ```
 2. Navigate to the backend directory and run:
    ```bash
@@ -184,7 +184,7 @@ VITE_API_BASE_URL=/api
 ### Backend (`backend/src/main/resources/application.yml` or OS environment variables)
 - `SPRING_DATASOURCE_URL`: JDBC Database URL
 - `SPRING_DATASOURCE_USERNAME`: Database username (default: `root`)
-- `SPRING_DATASOURCE_PASSWORD`: Database password (default: `Bunny@07`)
+- `SPRING_DATASOURCE_PASSWORD`: Database password (default: `admin`)
 - `PORT`: Port for the backend application (default: `8080`)
 
 ---
