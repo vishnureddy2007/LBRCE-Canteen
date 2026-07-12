@@ -103,14 +103,13 @@ LBRCE-Canteen-MS/
 
 ---
 
-## 👥 User Roles & Default Credentials
+## 👥 User Roles & Access
 
-| Role | Access | Default Username | Default Password |
-|------|--------|------------------|------------------|
-| **Admin** | Full System Management | `vishnureddy@gmail.com` | `Bunny@07` |
-| **Admin (Alternative)** | Full System Management | `admin@lbrce.edu` | `admin123` |
-| **Student** | Order Food, Track Orders, View History | *Register via Signup* | *Self-created* |
-| **Staff** | Manage Orders & Food Availability | *Created by Admin* | *Created by Admin* |
+| Role | Access |
+|------|--------|
+| **Admin** | Full System Management |
+| **Student** | Order Food, Track Orders, View History |
+| **Staff** | Manage Orders & Food Availability |
 
 ---
 
@@ -145,8 +144,8 @@ mysql -u root -p lbrce_canteen < database/seed_data.sql
    spring:
      datasource:
        url: jdbc:mysql://localhost:3306/lbrce_canteen?useSSL=false&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
-       username: root
-       password: admin
+       username: YOUR_DB_USERNAME
+       password: YOUR_DB_PASSWORD
    ```
 2. Navigate to the backend directory and run:
    ```bash
@@ -183,8 +182,8 @@ VITE_API_BASE_URL=/api
 
 ### Backend (`backend/src/main/resources/application.yml` or OS environment variables)
 - `SPRING_DATASOURCE_URL`: JDBC Database URL
-- `SPRING_DATASOURCE_USERNAME`: Database username (default: `root`)
-- `SPRING_DATASOURCE_PASSWORD`: Database password (default: `admin`)
+- `SPRING_DATASOURCE_USERNAME`: Database username
+- `SPRING_DATASOURCE_PASSWORD`: Database password
 - `PORT`: Port for the backend application (default: `8080`)
 
 ---
