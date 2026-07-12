@@ -48,6 +48,7 @@ import Offers           from './pages/admin/Offers';
 export default function App() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
   const user    = useAuthStore((s) => s.user);
+  const initialized = useAuthStore((s) => s.initialized);
   const location = useLocation();
 
   // Fetch current user on first load (uses session cookie).
@@ -60,6 +61,14 @@ export default function App() {
     window.addEventListener('auth:unauthorized', handler);
     return () => window.removeEventListener('auth:unauthorized', handler);
   }, [fetchMe]);
+
+  if (!initialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
 
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 

@@ -4,6 +4,7 @@ import api from '../api/axios';
 const useAuthStore = create((set, get) => ({
   user: null,
   loading: false,
+  initialized: false,
   error: null,
 
   /** Fetch the current user from /api/auth/me. Returns the user (or null). */
@@ -11,11 +12,11 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const me = await api.get('/auth/me');
-      set({ user: me, loading: false });
+      set({ user: me, loading: false, initialized: true });
       return me;
     } catch (e) {
       // 401 is expected when nobody's logged in — silent.
-      set({ user: null, loading: false, error: e.status === 401 ? null : e.message });
+      set({ user: null, loading: false, initialized: true, error: e.status === 401 ? null : e.message });
       return null;
     }
   },

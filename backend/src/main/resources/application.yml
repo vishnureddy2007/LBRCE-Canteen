@@ -1,7 +1,9 @@
 server:
   port: ${PORT:8080}
-  forward-headers-strategy: framework
+  forward-headers-strategy: native
   tomcat:
+    remoteip:
+      internal-proxies: ".*"
     threads:
       max: 500
       min-spare: 20
@@ -12,8 +14,8 @@ server:
       timeout: 24h
       cookie:
         name: LBRCESESSION
-        same-site: ${COOKIE_SAME_SITE:lax}
-        secure: ${COOKIE_SECURE:false}
+        same-site: ${COOKIE_SAME_SITE:none}
+        secure: ${COOKIE_SECURE:true}
         http-only: true
 
 spring:
