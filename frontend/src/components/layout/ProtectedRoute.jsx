@@ -1,11 +1,20 @@
-import { Outlet, Navigate } from 'react-router-dom';
-import useAuthStore from '../../store/authStore';
+import { Outlet, Navigate } from "react-router-dom";
+import useAuthStore from "../../store/authStore";
 
-/**
- * Guards a route tree: redirects to /login if no user is loaded.
- */
 export default function ProtectedRoute() {
-  const user = useAuthStore((s) => s.user);
-  if (!user) return <Navigate to="/login" replace />;
+  const { user, loading, initialized } = useAuthStore();
+
+  if (!initialized || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   return <Outlet />;
 }
