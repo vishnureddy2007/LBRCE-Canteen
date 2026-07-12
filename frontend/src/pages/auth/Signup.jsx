@@ -4,6 +4,7 @@ import { UserPlus, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../../store/authStore';
 import ThemeToggle from '../../components/common/ThemeToggle';
+import Logo from '../../components/common/Logo';
 
 export default function Signup() {
   const [form, setForm] = useState({
@@ -50,12 +51,9 @@ export default function Signup() {
         <ThemeToggle />
       </div>
       <div className="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-200 dark:border-slate-700 p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-md brand-gradient flex items-center justify-center text-white font-bold">L</div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Create student account</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Join the LBRCE Canteen ordering app</p>
-          </div>
+        <div className="flex flex-col items-center mb-6">
+          <Logo className="scale-110 mb-2" showText={true} />
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Create your Student Account</p>
         </div>
 
         <form onSubmit={onSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">

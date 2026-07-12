@@ -3,6 +3,7 @@ package com.lbrce.canteen.config;
 import com.lbrce.canteen.entity.Admin;
 import com.lbrce.canteen.entity.Announcement;
 import com.lbrce.canteen.entity.Category;
+import com.lbrce.canteen.entity.FoodImage;
 import com.lbrce.canteen.entity.FoodItem;
 import com.lbrce.canteen.entity.Offer;
 import com.lbrce.canteen.repository.AdminRepository;
@@ -183,7 +184,57 @@ public class DataInitializer implements CommandLineRunner {
         f.setAvailable(true);
         f.setRatingAvg(BigDecimal.ZERO);
         f.setRatingCount(0);
+
+        FoodImage img = new FoodImage();
+        img.setFoodItem(f);
+        img.setImageUrl(getUnsplashUrl(name));
+        img.setIsPrimary(true);
+        f.getImages().add(img);
+
         return f;
+    }
+
+    private static String getUnsplashUrl(String foodName) {
+        switch (foodName) {
+            case "Idli with Sambar":
+                return "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80";
+            case "Poori with Curry":
+                return "https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=600&auto=format&fit=crop&q=80";
+            case "Upma":
+                return "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?w=600&auto=format&fit=crop&q=80";
+            case "Veg Biryani":
+                return "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80";
+            case "Chicken Biryani":
+                return "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=600&auto=format&fit=crop&q=80";
+            case "Veg Fried Rice":
+                return "https://images.unsplash.com/photo-1603133872878-685f586b6d1d?w=600&auto=format&fit=crop&q=80";
+            case "Meals (Thali)":
+                return "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?w=600&auto=format&fit=crop&q=80";
+            case "Samosa":
+                return "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?w=600&auto=format&fit=crop&q=80";
+            case "Egg Puff":
+                return "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80";
+            case "Veg Noodles":
+                return "https://images.unsplash.com/photo-1612966608963-47da3147d41a?w=600&auto=format&fit=crop&q=80";
+            case "Chicken Manchuria":
+                return "https://images.unsplash.com/photo-1525755662778-989d0524087e?w=600&auto=format&fit=crop&q=80";
+            case "Chicken Fried Rice":
+                return "https://images.unsplash.com/photo-1603133872878-685f586b6d1d?w=600&auto=format&fit=crop&q=80";
+            case "Chicken Noodles":
+                return "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&auto=format&fit=crop&q=80";
+            case "Veg Manchuria":
+                return "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&auto=format&fit=crop&q=80";
+            case "Filter Coffee":
+                return "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80";
+            case "Masala Chai":
+                return "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80";
+            case "Fresh Lime Soda":
+                return "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=80";
+            case "Mango Lassi":
+                return "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=600&auto=format&fit=crop&q=80";
+            default:
+                return "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=80";
+        }
     }
 
     private static Offer makeOffer(String title, String desc, BigDecimal discount, Instant from, Instant to) {

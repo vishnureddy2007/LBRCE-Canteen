@@ -4,6 +4,7 @@ import { useState } from 'react';
 import useAuthStore from '../../store/authStore';
 import useThemeStore from '../../store/themeStore';
 import useCartStore from '../../store/cartStore';
+import Logo from '../common/Logo';
 
 const STUDENT_LINKS = [
   { to: '/student',           label: 'Dashboard' },
@@ -62,9 +63,8 @@ export default function Navbar() {
             >
               <MenuIcon size={20} />
             </button>
-            <Link to={user ? defaultFor(user.role) : '/login'} className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-md brand-gradient flex items-center justify-center text-white font-bold">L</div>
-              <span className="font-semibold text-slate-900 dark:text-white">LBRCE Canteen</span>
+            <Link to={user ? defaultFor(user.role) : '/login'}>
+              <Logo />
             </Link>
           </div>
 

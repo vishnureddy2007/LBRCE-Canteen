@@ -4,6 +4,7 @@ import { LogIn, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../../store/authStore';
 import ThemeToggle from '../../components/common/ThemeToggle';
+import Logo from '../../components/common/Logo';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -31,12 +32,9 @@ export default function Login() {
         <ThemeToggle />
       </div>
       <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-200 dark:border-slate-700 p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-md brand-gradient flex items-center justify-center text-white font-bold">L</div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">LBRCE Canteen</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Sign in to continue</p>
-          </div>
+        <div className="flex flex-col items-center mb-6">
+          <Logo className="scale-110 mb-2" showText={true} />
+          <p className="text-xs text-slate-500 dark:text-slate-400">Sign in to continue to Canteen Portal</p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4">

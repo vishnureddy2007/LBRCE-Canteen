@@ -1,0 +1,19 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- College Blue background card resembling a mobile app icon -->
+  <rect x="5" y="5" width="90" height="90" rx="20" fill="#1e40af" stroke="#ffffff" stroke-width="3" />
+  
+  <!-- Outer circle representing a plate -->
+  <circle cx="50" cy="53" r="28" fill="#ffffff" />
+  
+  <!-- Cutlery/Food elements: Fork and Spoon -->
+  <path d="M38 38 L45 45 M38 38 Q36 36 34 38 L31 35 L33 33 L36 36 Q38 34 38 38 Z" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M62 38 L55 45 M62 38 C64 36 67 38 69 40 C71 42 71 45 69 47 C67 49 64 49 62 47 Z" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- College Graduation Cap -->
+  <path d="M50 22 L72 30 L50 38 L28 30 Z" fill="#1e40af" />
+  <path d="M38 33.6 V45 C38 48 43 51 50 51 C57 51 62 48 62 45 V33.6" fill="#1e40af" />
+  <path d="M72 30 V42 C72 44 70 45 69 45" stroke="#10b981" stroke-width="2" stroke-linecap="round" />
+  
+  <!-- Fast Ordering Symbol: Bright Orange Lightning Bolt -->
+  <path d="M50 42 L42 55 H50 L48 68 L58 52 H48 Z" fill="#ea580c" />
+</svg>

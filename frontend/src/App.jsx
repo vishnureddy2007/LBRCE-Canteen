@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from './store/authStore';
+import Logo from './components/common/Logo';
 
 import Navbar      from './components/layout/Navbar';
 import Footer      from './components/layout/Footer';
@@ -64,8 +65,11 @@ export default function App() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 gap-4">
+        <div className="animate-pulse">
+          <Logo className="scale-125" showText={true} />
+        </div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange"></div>
       </div>
     );
   }
