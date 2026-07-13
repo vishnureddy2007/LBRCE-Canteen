@@ -38,33 +38,33 @@ public class DtoMapper {
             String placeholder = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80"; // Default fallback
             
             if (name.contains("idli")) {
-                placeholder = "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80"; // Soft white idlis served with hot sambar and coconut chutney on a steel plate
+                placeholder = "/uploads/idli_sambar.png"; // Soft white idlis served with hot sambar and coconut chutney on a steel plate
             } else if (name.contains("poori")) {
-                placeholder = "https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=600&auto=format&fit=crop&q=80"; // Golden fluffy puris with potato curry/masala
+                placeholder = "/uploads/poori_curry.png"; // Golden fluffy puris with potato curry/masala
             } else if (name.contains("upma")) {
-                placeholder = "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80"; // South Indian vegetable upma with mustard seeds, curry leaves, vegetables
+                placeholder = "/uploads/upma.png"; // South Indian vegetable upma with mustard seeds, curry leaves, vegetables
             } else if (name.contains("chicken biryani")) {
-                placeholder = "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=600&auto=format&fit=crop&q=80"; // Chicken biryani with long-grain rice, chicken pieces, boiled egg
+                placeholder = "/uploads/chicken_biryani.png"; // Chicken biryani with long-grain rice, chicken pieces, boiled egg
             } else if (name.contains("veg biryani") || name.contains("biryani")) {
-                placeholder = "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80"; // Aromatic vegetable biryani
+                placeholder = "/uploads/veg_biryani.png"; // Aromatic vegetable biryani
             } else if (name.contains("veg fried rice") || (name.contains("fried") && name.contains("rice"))) {
-                placeholder = "https://images.unsplash.com/photo-1603133872878-685f586b6d1d?w=600&auto=format&fit=crop&q=80"; // Indo-Chinese vegetable fried rice
+                placeholder = "/uploads/veg_fried_rice.png"; // Indo-Chinese vegetable fried rice
             } else if (name.contains("meals") || name.contains("thali")) {
-                placeholder = "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?w=600&auto=format&fit=crop&q=80"; // Complete South Indian thali
+                placeholder = "/uploads/meals_thali.png"; // Complete South Indian thali
             } else if (name.contains("samosa")) {
-                placeholder = "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?w=600&auto=format&fit=crop&q=80"; // Crispy triangular samosas served with green chutney
+                placeholder = "/uploads/samosa.png"; // Crispy triangular samosas served with green chutney
             } else if (name.contains("vada pav") || name.contains("vadapav")) {
-                placeholder = "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=600&auto=format&fit=crop&q=80"; // Mumbai-style vada pav
+                placeholder = "/uploads/vada_pav.png"; // Mumbai-style vada pav
             } else if (name.contains("maggi") || name.contains("noodles")) {
-                placeholder = "https://images.unsplash.com/photo-1612966608963-47da3147d41a?w=600&auto=format&fit=crop&q=80"; // Bowl of masala Maggi noodles
+                placeholder = "/uploads/masala_maggi.png"; // Bowl of masala Maggi noodles
             } else if (name.contains("coffee")) {
-                placeholder = "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80"; // South Indian filter coffee in steel tumbler and dabarah
+                placeholder = "/uploads/filter_coffee.png"; // South Indian filter coffee in steel tumbler and dabarah
             } else if (name.contains("tea") || name.contains("chai")) {
-                placeholder = "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80"; // Hot Indian masala tea in glass/cup
+                placeholder = "/uploads/masala_chai.png"; // Hot Indian masala tea in glass/cup
             } else if (name.contains("lime soda") || name.contains("lemon")) {
-                placeholder = "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=80"; // Lime soda glass with lemon slices
+                placeholder = "/uploads/fresh_lime_soda.png"; // Lime soda glass with lemon slices
             } else if (name.contains("lassi")) {
-                placeholder = "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=600&auto=format&fit=crop&q=80"; // Mango lassi
+                placeholder = "/uploads/mango_lassi.png"; // Mango lassi
             } else {
                 String categoryName = f.getCategory() == null ? "default" : f.getCategory().getName().toLowerCase();
                 if (categoryName.contains("breakfast")) {
