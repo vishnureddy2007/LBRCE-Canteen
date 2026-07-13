@@ -59,7 +59,7 @@ spring:
 # back to the browser via GET /uploads/{filename}.
 app:
   upload:
-    dir: src/main/resources/static/uploads
+    dir: uploads
 
 # Logging
 logging:

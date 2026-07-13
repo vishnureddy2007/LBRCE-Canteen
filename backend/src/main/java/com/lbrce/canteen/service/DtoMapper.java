@@ -28,9 +28,22 @@ public class DtoMapper {
         List<String> images = f.getImages() == null ? List.of()
                 : f.getImages().stream().map(FoodImage::getImageUrl).collect(Collectors.toList());
         if (images.isEmpty() && f.getId() != null) {
-            // placeholder image based on category
-            String placeholder = "/uploads/placeholder-" +
-                    (f.getCategory() == null ? "default" : f.getCategory().getName().toLowerCase()) + ".png";
+            // fallback image based on category using high-quality Unsplash URLs
+            String categoryName = f.getCategory() == null ? "default" : f.getCategory().getName().toLowerCase();
+            String placeholder;
+            if (categoryName.contains("breakfast")) {
+                placeholder = "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600&auto=format&fit=crop&q=80";
+            } else if (categoryName.contains("lunch")) {
+                placeholder = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80";
+            } else if (categoryName.contains("snack")) {
+                placeholder = "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=600&auto=format&fit=crop&q=80";
+            } else if (categoryName.contains("beverage")) {
+                placeholder = "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?w=600&auto=format&fit=crop&q=80";
+            } else if (categoryName.contains("fast")) {
+                placeholder = "https://images.unsplash.com/photo-1525755662778-989d0524087e?w=600&auto=format&fit=crop&q=80";
+            } else {
+                placeholder = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80";
+            }
             images = List.of(placeholder);
         }
         return new FoodResponse(

@@ -11,7 +11,7 @@ export default function CartItem({ item }) {
       <img
         src={getImageUrl(item.image)}
         alt={item.name}
-        onError={(e) => { e.currentTarget.src = '/uploads/placeholder-default.png'; }}
+        onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80'; }}
         className="w-14 h-14 rounded-md object-cover"
       />
       <div className="flex-1 min-w-0">

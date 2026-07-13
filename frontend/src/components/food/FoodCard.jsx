@@ -20,7 +20,7 @@ export default function FoodCard({ food }) {
         <img
           src={image}
           alt={food.name}
-          onError={(e) => { e.currentTarget.src = '/uploads/placeholder-default.png'; }}
+          onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80'; }}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ease-out"
           loading="lazy"
         />

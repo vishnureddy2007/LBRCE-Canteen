@@ -72,7 +72,11 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "https://*.vercel.app",
                 "https://*.railway.app",
-                "https://*.onrender.com"
+                "https://*.onrender.com",
+                "https://*.github.io",
+                "https://*.github.dev",
+                "https://*.app.github.dev",
+                "https://*.gitpod.io"
         ));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));

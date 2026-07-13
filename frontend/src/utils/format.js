@@ -27,7 +27,8 @@ export const truncate = (str, n = 60) =>
   (str || '').length > n ? `${str.slice(0, n - 1)}…` : str;
 
 export const getImageUrl = (path) => {
-  if (!path) return '/uploads/placeholder-default.png';
+  const fallback = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80';
+  if (!path || path.includes('placeholder-')) return fallback;
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
     return path;
   }
