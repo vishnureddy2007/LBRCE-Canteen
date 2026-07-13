@@ -28,18 +28,12 @@ public class DtoMapper {
         List<String> images = f.getImages() == null ? List.of()
                 : f.getImages().stream().map(FoodImage::getImageUrl).collect(Collectors.toList());
         
-        // Overwrite if empty or if it contains generic placeholder/vegetable/incorrect seed URLs
-        boolean hasNoRealImage = images.isEmpty() || images.stream().anyMatch(url -> 
-            url.contains("placeholder-") || 
-            url.contains("photo-1601050690597-df056fb4ce78") || // raw green peas / samosa
-            url.contains("photo-1509440159596-0249088772ff") || // raw bakery flour / egg puff
-            url.contains("photo-1612966608963-47da3147d41a") || // veg noodles
-            url.contains("photo-1525755662778-989d0524087e") || // chicken manchuria
-            url.contains("photo-1585032226651-759b368d7246") || // chicken noodles
-            url.contains("photo-1512058564366-18510be2db19")    // veg manchuria
+        // Overwrite if empty or if it is a default Unsplash seed image / generic placeholder
+        boolean isDefaultImage = images.isEmpty() || images.stream().anyMatch(url -> 
+            url.startsWith("https://images.unsplash.com") || url.contains("placeholder-")
         );
         
-        if (hasNoRealImage && f.getId() != null) {
+        if (isDefaultImage && f.getId() != null) {
             String name = f.getName().toLowerCase();
             String placeholder = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80"; // Default fallback
             
