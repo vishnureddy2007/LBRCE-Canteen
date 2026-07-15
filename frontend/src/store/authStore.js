@@ -11,7 +11,7 @@ const useAuthStore = create((set, get) => ({
   fetchMe: async () => {
     set({ loading: true, error: null });
     try {
-      const me = await api.get('/auth/me');
+      const me = await api.get('/auth/me', { timeout: 3000 });
       set({ user: me, loading: false, initialized: true });
       return me;
     } catch (e) {

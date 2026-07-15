@@ -70,6 +70,10 @@ public class SecurityConfig {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://192.168.*:*",
+                "http://10.*:*",
+                "http://172.*:*",
                 "https://*.vercel.app",
                 "https://*.railway.app",
                 "https://*.onrender.com",
