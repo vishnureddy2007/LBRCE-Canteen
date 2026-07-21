@@ -10,14 +10,31 @@ const useAuthStore = create((set, get) => ({
   /** Fetch the current user from /api/auth/me. Returns the user (or null). */
   fetchMe: async () => {
     set({ loading: true, error: null });
-    try {
-      const me = await api.get('/auth/me', { timeout: 3000 });
-      set({ user: me, loading: false, initialized: true });
-      return me;
-    } catch (e) {
-      // 401 is expected when nobody's logged in — silent.
-      set({ user: null, loading: false, initialized: true, error: e.status === 401 ? null : e.message });
-      return null;
+    let attempts = 0;
+    const maxAttempts = 3;
+    while (attempts < maxAttempts) {
+      try {
+        const me = await api.get('/auth/me', { timeout: 15000 });
+        set({ user: me, loading: false, initialized: true });
+        return me;
+      } catch (e) {
+        attempts++;
+        const isNetworkOrGatewayError =
+          e.status === 502 ||
+          e.status === 504 ||
+          e.message?.includes('timeout') ||
+          e.message?.includes('Network') ||
+          !e.status; // general network errors
+
+        if (isNetworkOrGatewayError && attempts < maxAttempts) {
+          // Wait 2.5 seconds before retrying to let Render spin up
+          await new Promise((resolve) => setTimeout(resolve, 2500));
+          continue;
+        }
+        // 401 is expected when nobody's logged in — silent.
+        set({ user: null, loading: false, initialized: true, error: e.status === 401 ? null : e.message });
+        return null;
+      }
     }
   },
 

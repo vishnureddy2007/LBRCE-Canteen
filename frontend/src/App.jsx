@@ -70,6 +70,9 @@ export default function App() {
           <Logo className="scale-125" showText={true} />
         </div>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange"></div>
+        <p className="text-xs text-slate-500 dark:text-slate-400 animate-pulse mt-2">
+          Connecting to canteen services. Waking up the server, please wait...
+        </p>
       </div>
     );
   }

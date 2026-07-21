@@ -133,7 +133,8 @@ public class SecurityConfig {
                     .logoutSuccessHandler((request, response, authentication) -> {
                         response.setStatus(HttpStatus.OK.value());
                         response.setContentType("application/json");
-                        response.setHeader("Set-Cookie", "LBRCESESSION=; Path=/; Max-Age=0; Expires=Thu, 01-Jan-1970 00:00:00 GMT; SameSite=Lax; HttpOnly");
+                        String secureFlag = request.isSecure() ? "; Secure" : "";
+                        response.setHeader("Set-Cookie", "LBRCESESSION=; Path=/; Max-Age=0; Expires=Thu, 01-Jan-1970 00:00:00 GMT; SameSite=Lax; HttpOnly" + secureFlag);
                         response.getWriter().write("{\"success\":true,\"message\":\"Logged out\"}");
                     })
                     .invalidateHttpSession(true)

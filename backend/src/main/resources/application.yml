@@ -15,7 +15,7 @@ server:
       cookie:
         name: LBRCESESSION
         same-site: ${COOKIE_SAME_SITE:lax}
-        secure: ${COOKIE_SECURE:false}
+        secure: ${COOKIE_SECURE:true}
         http-only: true
 
 spring:
@@ -24,16 +24,17 @@ spring:
 
   # MySQL connection. Change these values for your local environment.
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/lbrce_canteen?useSSL=false&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/lbrce_canteen?useSSL=false&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true&connectTimeout=10000&socketTimeout=30000}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:admin}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 50
-      minimum-idle: 10
+      maximum-pool-size: 10
+      minimum-idle: 2
       idle-timeout: 300000
       max-lifetime: 1800000
-      connection-timeout: 30000
+      connection-timeout: 20000
+      validation-timeout: 3000
 
   jpa:
     hibernate:
@@ -60,6 +61,12 @@ spring:
 app:
   upload:
     dir: uploads
+
+# Cloudinary keys configuration
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+  api-key: ${CLOUDINARY_API_KEY:}
+  api-secret: ${CLOUDINARY_API_SECRET:}
 
 # Logging
 logging:
