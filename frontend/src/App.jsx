@@ -65,14 +65,20 @@ export default function App() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 gap-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 gap-4 p-4 text-center">
         <div className="animate-pulse">
           <Logo className="scale-125" showText={true} />
         </div>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange"></div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 animate-pulse mt-2">
+        <p className="text-xs text-slate-500 dark:text-slate-400 animate-pulse mt-2 max-w-xs">
           Connecting to canteen services. Waking up the server, please wait...
         </p>
+        <button
+          onClick={() => useAuthStore.setState({ initialized: true })}
+          className="mt-2 px-4 py-2 text-xs font-semibold text-brand-orange bg-brand-orange/10 hover:bg-brand-orange/20 rounded-xl transition-all active:scale-95"
+        >
+          Skip &amp; Continue to Login
+        </button>
       </div>
     );
   }

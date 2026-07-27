@@ -6,7 +6,7 @@ const api = axios.create({
   baseURL: '/api',
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 30000,
+  timeout: 45000,
 });
 
 // Response interceptor: unwrap the standard envelope so callers see just the
