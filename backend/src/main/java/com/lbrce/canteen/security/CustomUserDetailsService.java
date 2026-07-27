@@ -45,34 +45,36 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Admins first (most common login during dev), then staff, then students.
-        Optional<Admin> admin = adminRepository.findByUsernameOrEmail(username, username);
-        if (admin.isPresent()) {
-            Admin a = admin.get();
-            return toUserDetails(a.getUsername(), a.getPasswordHash(), "ADMIN", a.getId());
+        // Students first (vast majority of canteen users), then staff, then admins.
+        Optional<Student> student = studentRepository.findByRollNumberOrEmail(username, username);
+        if (student.isPresent()) {
+            Student s = student.get();
+            return toUserDetails(s.getRollNumber(), s.getPasswordHash(), "STUDENT", s.getId(), s.getFullName(), s.getEmail());
         }
 
         Optional<Staff> staff = staffRepository.findByEmployeeIdOrEmail(username, username);
         if (staff.isPresent()) {
             Staff s = staff.get();
-            return toUserDetails(s.getEmployeeId(), s.getPasswordHash(), "STAFF", s.getId());
+            return toUserDetails(s.getEmployeeId(), s.getPasswordHash(), "STAFF", s.getId(), s.getFullName(), s.getEmail());
         }
 
-        Optional<Student> student = studentRepository.findByRollNumberOrEmail(username, username);
-        if (student.isPresent()) {
-            Student s = student.get();
-            return toUserDetails(s.getRollNumber(), s.getPasswordHash(), "STUDENT", s.getId());
+        Optional<Admin> admin = adminRepository.findByUsernameOrEmail(username, username);
+        if (admin.isPresent()) {
+            Admin a = admin.get();
+            return toUserDetails(a.getUsername(), a.getPasswordHash(), "ADMIN", a.getId(), a.getFullName(), a.getEmail());
         }
 
         throw new UsernameNotFoundException("User not found: " + username);
     }
 
-    private static UserDetails toUserDetails(String loginId, String passwordHash, String role, Long userId) {
+    private static UserDetails toUserDetails(String loginId, String passwordHash, String role, Long userId, String fullName, String email) {
         return new LbrceUserDetails(
                 loginId,
                 passwordHash,
                 List.of(new SimpleGrantedAuthority("ROLE_" + role)),
                 userId,
-                role);
+                role,
+                fullName,
+                email);
     }
 }

@@ -73,12 +73,6 @@ export default function App() {
         <p className="text-xs text-slate-500 dark:text-slate-400 animate-pulse mt-2 max-w-xs">
           Connecting to canteen services. Waking up the server, please wait...
         </p>
-        <button
-          onClick={() => useAuthStore.setState({ initialized: true })}
-          className="mt-2 px-4 py-2 text-xs font-semibold text-brand-orange bg-brand-orange/10 hover:bg-brand-orange/20 rounded-xl transition-all active:scale-95"
-        >
-          Skip &amp; Continue to Login
-        </button>
       </div>
     );
   }

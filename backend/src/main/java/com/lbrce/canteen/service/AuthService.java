@@ -9,6 +9,7 @@ import com.lbrce.canteen.exception.ConflictException;
 import com.lbrce.canteen.repository.AdminRepository;
 import com.lbrce.canteen.repository.StaffRepository;
 import com.lbrce.canteen.repository.StudentRepository;
+import com.lbrce.canteen.security.LbrceUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -87,6 +88,16 @@ public class AuthService {
 
         HttpSession session = httpRequest.getSession(true);
         session.setAttribute("SPRING_SECURITY_CONTEXT", context);
+
+        if (auth.getPrincipal() instanceof LbrceUserDetails details) {
+            return new AuthResponse(
+                    details.getUserId(),
+                    details.getUsername(),
+                    details.getFullName(),
+                    details.getEmail(),
+                    details.getRole()
+            );
+        }
 
         return resolveCurrentUser(auth.getName());
     }
