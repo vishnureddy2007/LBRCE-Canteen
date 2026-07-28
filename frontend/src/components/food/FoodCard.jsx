@@ -1,36 +1,61 @@
+import { useState } from 'react';
 import { Plus, Minus, Star } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
 import toast from 'react-hot-toast';
 import { getImageUrl } from '../../utils/format';
 
 export default function FoodCard({ food }) {
-  const add     = useCartStore((s) => s.add);
-  const items   = useCartStore((s) => s.items);
-  const setQty  = useCartStore((s) => s.setQty);
+  const add = useCartStore((s) => s.add);
+  const items = useCartStore((s) => s.items);
+  const setQty = useCartStore((s) => s.setQty);
+
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const inCart = items.find((it) => it.foodId === food.id);
-  const qty    = inCart?.quantity ?? 0;
+  const qty = inCart?.quantity ?? 0;
 
-  const image = getImageUrl(food.images && food.images[0]);
+  // Pass food.name to ensure dish-specific fallback photo if primary URL is missing
+  const imageUrl = getImageUrl(food.images && food.images[0], food.name);
+
+  const isNonVeg = food.name.toLowerCase().includes('chicken') ||
+                   food.name.toLowerCase().includes('egg') ||
+                   food.name.toLowerCase().includes('mutton') ||
+                   food.name.toLowerCase().includes('fish');
 
   return (
-    <div className="card rounded-2xl bg-white dark:bg-slate-800 shadow-card border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 group">
+    <div className="card rounded-2xl bg-white dark:bg-slate-800 shadow-card border border-slate-200/80 dark:border-slate-700/80 overflow-hidden flex flex-col hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 group">
       {/* Food Image Container */}
       <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+        {/* Loading Shimmer Skeleton */}
+        {!imageLoaded && !imageError && (
+          <div className="absolute inset-0 bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        )}
+
         <img
-          src={image}
+          src={imageError ? 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80' : imageUrl}
           alt={food.name}
-          onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80'; }}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ease-out"
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            setImageError(true);
+            setImageLoaded(true);
+          }}
+          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ease-out ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           loading="lazy"
         />
-        {/* Category Badge */}
-        {food.category && (
-          <span className="absolute top-3 left-3 bg-blue-600/90 dark:bg-slate-900/80 backdrop-blur-sm text-white dark:text-blue-400 font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-sm">
-            {food.category.name}
-          </span>
-        )}
-        
+
+        {/* Veg / Non-Veg Indicator Dot */}
+        <div
+          className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1 rounded-md shadow-sm border border-slate-200/50 dark:border-slate-700"
+          title={isNonVeg ? 'Non-Vegetarian' : 'Vegetarian'}
+        >
+          <div className={`w-3.5 h-3.5 border flex items-center justify-center p-[2px] ${isNonVeg ? 'border-red-600' : 'border-emerald-600'}`}>
+            <div className={`w-1.5 h-1.5 rounded-full ${isNonVeg ? 'bg-red-600' : 'bg-emerald-600'}`} />
+          </div>
+        </div>
+
         {/* Rating Badge */}
         {food.ratingCount > 0 && (
           <div className="absolute top-3 right-3 bg-white/95 dark:bg-slate-900/90 backdrop-blur-sm text-amber-500 font-bold px-2 py-0.5 rounded-full flex items-center gap-1 text-xs shadow-sm">
@@ -53,16 +78,20 @@ export default function FoodCard({ food }) {
         {/* Pricing and Actions */}
         <div className="mt-auto pt-2 flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Price</span>
-            <span className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Price</span>
+            <span className="text-lg font-black text-slate-900 dark:text-white leading-none">
               ₹{Number(food.price).toFixed(2)}
             </span>
           </div>
 
           {qty === 0 ? (
             <button
-              onClick={() => { add(food, 1); toast.success(`${food.name} added to cart`); }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-semibold hover:bg-brand-orange-dark transition-all duration-150 active:scale-95 shadow-sm hover:shadow"
+              onClick={() => {
+                add(food, 1);
+                toast.success(`${food.name} added to cart`, { icon: '🛒' });
+              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-brand-orange-dark focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 transition-all duration-150 active:scale-95 shadow-sm hover:shadow"
+              aria-label={`Add ${food.name} to cart`}
             >
               <Plus size={14} strokeWidth={2.5} />
               <span>Add</span>
@@ -71,16 +100,16 @@ export default function FoodCard({ food }) {
             <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200/50 dark:border-slate-600/40">
               <button
                 onClick={() => setQty(food.id, qty - 1)}
-                className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm active:scale-90 transition-all"
-                aria-label="decrement"
+                className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm active:scale-90 transition-all focus:ring-1 focus:ring-brand-orange"
+                aria-label={`Decrease quantity of ${food.name}`}
               >
                 <Minus size={14} strokeWidth={2.5} />
               </button>
-              <span className="font-semibold w-5 text-center text-xs text-slate-800 dark:text-slate-100">{qty}</span>
+              <span className="font-bold w-5 text-center text-xs text-slate-800 dark:text-slate-100">{qty}</span>
               <button
                 onClick={() => setQty(food.id, qty + 1)}
-                className="w-7 h-7 rounded-lg bg-brand-orange text-white flex items-center justify-center hover:bg-brand-orange-dark shadow-sm active:scale-90 transition-all"
-                aria-label="increment"
+                className="w-7 h-7 rounded-lg bg-brand-orange text-white flex items-center justify-center hover:bg-brand-orange-dark shadow-sm active:scale-90 transition-all focus:ring-1 focus:ring-brand-orange"
+                aria-label={`Increase quantity of ${food.name}`}
               >
                 <Plus size={14} strokeWidth={2.5} />
               </button>

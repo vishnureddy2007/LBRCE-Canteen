@@ -1,19 +1,38 @@
-<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- College Blue background card resembling a mobile app icon -->
-  <rect x="5" y="5" width="90" height="90" rx="20" fill="#1e40af" stroke="#ffffff" stroke-width="3" />
-  
-  <!-- Outer circle representing a plate -->
-  <circle cx="50" cy="53" r="28" fill="#ffffff" />
-  
-  <!-- Cutlery/Food elements: Fork and Spoon -->
-  <path d="M38 38 L45 45 M38 38 Q36 36 34 38 L31 35 L33 33 L36 36 Q38 34 38 38 Z" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-  <path d="M62 38 L55 45 M62 38 C64 36 67 38 69 40 C71 42 71 45 69 47 C67 49 64 49 62 47 Z" stroke="#1e40af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-  
-  <!-- College Graduation Cap -->
-  <path d="M50 22 L72 30 L50 38 L28 30 Z" fill="#1e40af" />
-  <path d="M38 33.6 V45 C38 48 43 51 50 51 C57 51 62 48 62 45 V33.6" fill="#1e40af" />
-  <path d="M72 30 V42 C72 44 70 45 69 45" stroke="#10b981" stroke-width="2" stroke-linecap="round" />
-  
-  <!-- Fast Ordering Symbol: Bright Orange Lightning Bolt -->
-  <path d="M50 42 L42 55 H50 L48 68 L58 52 H48 Z" fill="#ea580c" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App Icon Background -->
+  <rect x="4" y="4" width="92" height="92" rx="24" fill="url(#bgGrad)" stroke="#3B82F6" stroke-width="2"/>
+
+  <!-- LBRCE College Building Silhouette background -->
+  <path d="M 22 55 L 22 45 L 34 35 L 50 25 L 66 35 L 78 45 L 78 55 Z" fill="#2563EB" opacity="0.35"/>
+  <rect x="46" y="28" width="8" height="10" fill="url(#goldGrad)" opacity="0.6"/>
+  <polygon points="50,20 44,28 56,28" fill="url(#goldGrad)"/>
+
+  <!-- Food Cloche Dome -->
+  <path d="M 26 58 C 26 40, 74 40, 74 58 Z" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="50" cy="38" r="3.5" fill="url(#goldGrad)"/>
+  <line x1="22" y1="58" x2="78" y2="58" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Crossed Fork & Spoon -->
+  <!-- Fork -->
+  <path d="M 38 64 L 38 78 M 35 64 V 70 M 41 64 V 70 M 35 70 Q 38 74 41 70" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Spoon -->
+  <path d="M 62 64 L 62 78 M 59 64 C 59 70 65 70 65 64 Z" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- Mobile Ordering Pulse Motif (Orange Lightning / Beacon) -->
+  <path d="M 50 60 L 44 72 H 51 L 49 83 L 58 69 H 51 Z" fill="url(#orangeGrad)"/>
 </svg>

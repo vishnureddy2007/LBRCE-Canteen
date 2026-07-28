@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+  <defs>
+    <linearGradient id="brandBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="brandOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Logo Mark Container -->
+  <g transform="translate(10, 10)">
+    <rect width="60" height="60" rx="16" fill="url(#brandBlue)"/>
+    <!-- LBRCE Building Silhouette -->
+    <path d="M 12 36 L 12 30 L 20 23 L 30 16 L 40 23 L 48 30 L 48 36 Z" fill="#60A5FA" opacity="0.4"/>
+    <!-- Cloche -->
+    <path d="M 16 38 C 16 26, 44 26, 44 38 Z" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="30" cy="24" r="2.5" fill="url(#gold)"/>
+    <line x1="13" y1="38" x2="47" y2="38" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Cutlery & Mobile Pulse -->
+    <path d="M 23 42 L 23 52 M 21 42 V 46 M 25 42 V 46" stroke="url(#gold)" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 37 42 L 37 52 M 35 42 Q 37 47 39 42" stroke="url(#gold)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <path d="M 30 39 L 26 47 H 31 L 29 55 L 36 45 H 31 Z" fill="url(#brandOrange)"/>
+  </g>
+
+  <!-- Text Section (Light Background) -->
+  <text x="84" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="24" fill="#0F172A" letter-spacing="-0.5">LBRCE</text>
+  <text x="84" y="56" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="14" fill="#EA580C" letter-spacing="2">CANTEEN</text>
+</svg>

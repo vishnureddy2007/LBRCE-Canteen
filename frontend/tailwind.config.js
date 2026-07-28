@@ -6,26 +6,33 @@ export default {
     extend: {
       colors: {
         brand: {
-          blue:   '#6366F1',
-          'blue-dark': '#4F46E5',
-          'blue-light': '#818CF8',
-          orange: '#06B6D4',
-          'orange-dark': '#0891B2',
-          'orange-light': '#22D3EE',
+          blue:          '#1E3A8A', // Deep LBRCE Royal Blue
+          'blue-dark':   '#172554',
+          'blue-light':  '#2563EB',
+          'blue-accent': '#3B82F6',
+          orange:        '#F97316', // Vibrant Canteen Orange
+          'orange-dark': '#EA580C',
+          'orange-light':'#FB923C',
         },
         slate: {
-          950: '#030303',
-          900: '#050507', // Sleek black background for dark mode pages
-          800: '#121214', // Charcoal background for dark mode cards/navbars
-          700: '#1F1F23', // Professional thin dark borders
-          600: '#3F3F46', // Dark gray for secondary borders/text
+          950: '#030712',
+          900: '#0B0F17', // Modern deep dark mode background
+          800: '#111827', // Card surface background
+          700: '#1F2937', // Border colors
+          600: '#374151',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
       },
       boxShadow: {
-        'card': '0 4px 16px -2px rgba(0,0,0,0.08)',
+        'card': '0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04)',
+        'glow-orange': '0 0 20px -3px rgba(249, 115, 22, 0.35)',
+        'glow-blue': '0 0 20px -3px rgba(37, 99, 235, 0.35)',
+      },
+      backdropBlur: {
+        xs: '2px',
       },
     },
   },

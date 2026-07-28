@@ -1,62 +1,53 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from './store/authStore';
 import Logo from './components/common/Logo';
+import Loader from './components/common/Loader';
 
 import Navbar      from './components/layout/Navbar';
+import MobileNav   from './components/layout/MobileNav';
 import Footer      from './components/layout/Footer';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import RoleRoute   from './components/layout/RoleRoute';
 
+// Public pages
 import Login       from './pages/auth/Login';
 import Signup      from './pages/auth/Signup';
 
-// Student pages
-import StudentDashboard from './pages/student/Dashboard';
-import Menu             from './pages/student/Menu';
-import Checkout         from './pages/student/Checkout';
-import MyOrders         from './pages/student/MyOrders';
-import OrderTrack       from './pages/student/OrderTrack';
-import Profile          from './pages/student/Profile';
-import Feedback         from './pages/student/Feedback';
+// Lazy-loaded Student pages
+const StudentDashboard = lazy(() => import('./pages/student/Dashboard'));
+const Menu             = lazy(() => import('./pages/student/Menu'));
+const Checkout         = lazy(() => import('./pages/student/Checkout'));
+const MyOrders         = lazy(() => import('./pages/student/MyOrders'));
+const OrderTrack       = lazy(() => import('./pages/student/OrderTrack'));
+const Profile          = lazy(() => import('./pages/student/Profile'));
+const Feedback         = lazy(() => import('./pages/student/Feedback'));
 
-// Staff pages
-import StaffDashboard   from './pages/staff/Dashboard';
-import OrderQueue       from './pages/staff/OrderQueue';
-import DailyOrders      from './pages/staff/DailyOrders';
-import Availability     from './pages/staff/Availability';
+// Lazy-loaded Staff pages
+const StaffDashboard   = lazy(() => import('./pages/staff/Dashboard'));
+const OrderQueue       = lazy(() => import('./pages/staff/OrderQueue'));
+const DailyOrders      = lazy(() => import('./pages/staff/DailyOrders'));
+const Availability     = lazy(() => import('./pages/staff/Availability'));
 
-// Admin pages
-import AdminDashboard   from './pages/admin/Dashboard';
-import ManageStudents   from './pages/admin/ManageStudents';
-import ManageStaff      from './pages/admin/ManageStaff';
-import ManageFood       from './pages/admin/ManageFood';
-import AdminOrders      from './pages/admin/Orders';
-import Reports          from './pages/admin/Reports';
-import Announcements    from './pages/admin/Announcements';
-import Offers           from './pages/admin/Offers';
+// Lazy-loaded Admin pages
+const AdminDashboard   = lazy(() => import('./pages/admin/Dashboard'));
+const ManageStudents   = lazy(() => import('./pages/admin/ManageStudents'));
+const ManageStaff      = lazy(() => import('./pages/admin/ManageStaff'));
+const ManageFood       = lazy(() => import('./pages/admin/ManageFood'));
+const AdminOrders      = lazy(() => import('./pages/admin/Orders'));
+const Reports          = lazy(() => import('./pages/admin/Reports'));
+const Announcements    = lazy(() => import('./pages/admin/Announcements'));
+const Offers           = lazy(() => import('./pages/admin/Offers'));
 
-/**
- * Top-level routing tree. Two layers of guards:
- *
- * <ul>
- *   <li>{@link ProtectedRoute} — requires a logged-in user</li>
- *   <li>{@link RoleRoute} — additionally restricts by role</li>
- * </ul>
- *
- * The navbar listens to {@code authStore.user.role} and re-renders on changes.
- */
 export default function App() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
   const user    = useAuthStore((s) => s.user);
   const initialized = useAuthStore((s) => s.initialized);
   const location = useLocation();
 
-  // Fetch current user on first load (uses session cookie).
+  // Fetch current user on first load
   useEffect(() => { fetchMe(); }, [fetchMe]);
 
-  // If a 401 fires from anywhere, force a re-check of /me which will
-  // either confirm the session or clear the user.
   useEffect(() => {
     const handler = () => fetchMe();
     window.addEventListener('auth:unauthorized', handler);
@@ -65,14 +56,16 @@ export default function App() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 gap-4 p-4 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 gap-5 p-4 text-center">
         <div className="animate-pulse">
           <Logo className="scale-125" showText={true} />
         </div>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange"></div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 animate-pulse mt-2 max-w-xs">
-          Connecting to canteen services. Waking up the server, please wait...
-        </p>
+        <div className="flex items-center gap-2">
+          <div className="h-3 w-3 bg-brand-orange rounded-full animate-ping" />
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Initializing LBRCE Canteen portal...
+          </p>
+        </div>
       </div>
     );
   }
@@ -80,51 +73,56 @@ export default function App() {
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 selection:bg-brand-orange/30">
       {!isAuthPage && <Navbar />}
+
       <main className="flex-1">
-        <Routes>
-          {/* Public */}
-          <Route path="/login"  element={user ? <Navigate to={defaultRouteFor(user.role)} replace /> : <Login />} />
-          <Route path="/signup" element={user ? <Navigate to={defaultRouteFor(user.role)} replace /> : <Signup />} />
+        <Suspense fallback={<Loader label="Loading section..." />}>
+          <Routes>
+            {/* Public Auth Routes */}
+            <Route path="/login"  element={user ? <Navigate to={defaultRouteFor(user.role)} replace /> : <Login />} />
+            <Route path="/signup" element={user ? <Navigate to={defaultRouteFor(user.role)} replace /> : <Signup />} />
 
-          {/* Student */}
-          <Route element={<ProtectedRoute><RoleRoute roles={['STUDENT']} /></ProtectedRoute>}>
-            <Route path="/student"           element={<StudentDashboard />} />
-            <Route path="/student/menu"      element={<Menu />} />
-            <Route path="/student/cart"      element={<Checkout />} />
-            <Route path="/student/orders"    element={<MyOrders />} />
-            <Route path="/student/orders/:id" element={<OrderTrack />} />
-            <Route path="/student/profile"   element={<Profile />} />
-            <Route path="/student/feedback"  element={<Feedback />} />
-          </Route>
+            {/* Student Routes */}
+            <Route element={<ProtectedRoute><RoleRoute roles={['STUDENT']} /></ProtectedRoute>}>
+              <Route path="/student"           element={<StudentDashboard />} />
+              <Route path="/student/menu"      element={<Menu />} />
+              <Route path="/student/cart"      element={<Checkout />} />
+              <Route path="/student/orders"    element={<MyOrders />} />
+              <Route path="/student/orders/:id" element={<OrderTrack />} />
+              <Route path="/student/profile"   element={<Profile />} />
+              <Route path="/student/feedback"  element={<Feedback />} />
+            </Route>
 
-          {/* Staff */}
-          <Route element={<ProtectedRoute><RoleRoute roles={['STAFF','ADMIN']} /></ProtectedRoute>}>
-            <Route path="/staff"              element={<StaffDashboard />} />
-            <Route path="/staff/queue"        element={<OrderQueue />} />
-            <Route path="/staff/orders"       element={<DailyOrders />} />
-            <Route path="/staff/availability" element={<Availability />} />
-          </Route>
+            {/* Staff Routes */}
+            <Route element={<ProtectedRoute><RoleRoute roles={['STAFF','ADMIN']} /></ProtectedRoute>}>
+              <Route path="/staff"              element={<StaffDashboard />} />
+              <Route path="/staff/queue"        element={<OrderQueue />} />
+              <Route path="/staff/orders"       element={<DailyOrders />} />
+              <Route path="/staff/availability" element={<Availability />} />
+            </Route>
 
-          {/* Admin */}
-          <Route element={<ProtectedRoute><RoleRoute roles={['ADMIN']} /></ProtectedRoute>}>
-            <Route path="/admin"               element={<AdminDashboard />} />
-            <Route path="/admin/foods"         element={<ManageFood />} />
-            <Route path="/admin/students"      element={<ManageStudents />} />
-            <Route path="/admin/staff"         element={<ManageStaff />} />
-            <Route path="/admin/orders"        element={<AdminOrders />} />
-            <Route path="/admin/reports"       element={<Reports />} />
-            <Route path="/admin/announcements" element={<Announcements />} />
-            <Route path="/admin/offers"        element={<Offers />} />
-          </Route>
+            {/* Admin Routes */}
+            <Route element={<ProtectedRoute><RoleRoute roles={['ADMIN']} /></ProtectedRoute>}>
+              <Route path="/admin"               element={<AdminDashboard />} />
+              <Route path="/admin/foods"         element={<ManageFood />} />
+              <Route path="/admin/students"      element={<ManageStudents />} />
+              <Route path="/admin/staff"         element={<ManageStaff />} />
+              <Route path="/admin/orders"        element={<AdminOrders />} />
+              <Route path="/admin/reports"       element={<Reports />} />
+              <Route path="/admin/announcements" element={<Announcements />} />
+              <Route path="/admin/offers"        element={<Offers />} />
+            </Route>
 
-          {/* Default */}
-          <Route path="/" element={<Navigate to={user ? defaultRouteFor(user.role) : '/login'} replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/* Fallback Defaults */}
+            <Route path="/" element={<Navigate to={user ? defaultRouteFor(user.role) : '/login'} replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </main>
+
       {!isAuthPage && <Footer />}
+      {!isAuthPage && <MobileNav />}
     </div>
   );
 }

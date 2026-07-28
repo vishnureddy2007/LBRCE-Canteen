@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,22 +10,69 @@
 
 html, body, #root {
   height: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
 }
 
-/* Smooth theme transition for common surfaces. */
+/* Smooth theme transition for common surfaces */
 body, .card, .navbar, .sidebar {
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
-/* Brand gradient — used by navbar and primary CTAs. */
+/* Brand gradient — used by hero banners, active badges, and CTAs */
 .brand-gradient {
-  background: linear-gradient(90deg, #6366F1 0%, #06B6D4 100%);
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #EA580C 100%);
 }
 
-/* Scrollbars in dark mode */
-.dark ::-webkit-scrollbar { width: 8px; height: 8px; }
-.dark ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-.dark ::-webkit-scrollbar-track { background: transparent; }
+.brand-gradient-orange {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+}
 
-/* Focus ring accent */
-:focus-visible { outline: 2px solid #06B6D4; outline-offset: 2px; }
+.brand-gradient-blue {
+  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%);
+}
+
+/* Glassmorphism panel styling */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-panel {
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(31, 41, 55, 0.8);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Focus ring accent for keyboard accessibility */
+:focus-visible {
+  outline: 2px solid #F97316;
+  outline-offset: 2px;
+}
+
+/* Hide scrollbar for clean horizontal tab sliders */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

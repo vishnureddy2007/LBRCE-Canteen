@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Sun, Moon, ShoppingCart, LogOut, User, Menu as MenuIcon } from 'lucide-react';
+import { Sun, Moon, ShoppingCart, LogOut, User, Menu as MenuIcon, X } from 'lucide-react';
 import { useState } from 'react';
 import useAuthStore from '../../store/authStore';
 import useThemeStore from '../../store/themeStore';
@@ -52,33 +52,34 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-40 bg-white dark:bg-slate-800 shadow-card border-b border-slate-200 dark:border-slate-700">
+    <nav className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <button
-              className="md:hidden p-2 rounded-md text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="md:hidden p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
               onClick={() => setOpen((o) => !o)}
-              aria-label="Open menu"
+              aria-label="Toggle navigation menu"
             >
-              <MenuIcon size={20} />
+              {open ? <X size={20} /> : <MenuIcon size={20} />}
             </button>
-            <Link to={user ? defaultFor(user.role) : '/login'}>
+            <Link to={user ? defaultFor(user.role) : '/login'} className="focus:outline-none focus:ring-2 focus:ring-brand-orange rounded-xl p-1">
               <Logo />
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center gap-1">
+          {/* Desktop Nav Links */}
+          <div className="hidden md:flex items-center gap-1.5">
             {links.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 end={l.to === '/student' || l.to === '/staff' || l.to === '/admin'}
                 className={({ isActive }) =>
-                  `px-3 py-2 rounded-md text-sm font-medium transition ${
+                  `px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 ${
                     isActive
-                      ? 'bg-brand-blue text-white'
-                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      ? 'bg-brand-blue text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`
                 }
               >
@@ -87,62 +88,68 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {user?.role === 'STUDENT' && (
               <Link
                 to="/student/cart"
-                className="relative p-2 rounded-md text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
-                aria-label="Cart"
+                className="relative p-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95"
+                aria-label={`Shopping cart with ${itemCount} items`}
               >
                 <ShoppingCart size={20} />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-brand-orange text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-brand-orange text-white text-[10px] font-extrabold rounded-full w-5 h-5 flex items-center justify-center shadow-md animate-pulse">
                     {itemCount}
                   </span>
                 )}
               </Link>
             )}
+
             <button
               onClick={toggle}
-              className="p-2 rounded-md text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
-              aria-label="Toggle theme"
+              className="p-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              {theme === 'dark' ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} className="text-slate-600" />}
             </button>
+
             {user && (
               <div className="flex items-center gap-2 ml-1">
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-100 dark:bg-slate-700">
-                  <User size={16} className="text-slate-600 dark:text-slate-300" />
-                  <span className="text-sm text-slate-800 dark:text-slate-100 font-medium">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60">
+                  <User size={15} className="text-brand-orange" />
+                  <span className="text-xs text-slate-800 dark:text-slate-200 font-bold max-w-[120px] truncate">
                     {user.fullName || user.username}
                   </span>
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-brand-blue text-white">{user.role}</span>
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-blue text-white uppercase tracking-wider">
+                    {user.role}
+                  </span>
                 </div>
+
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-md text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
-                  aria-label="Logout"
+                  className="p-2.5 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-all active:scale-95"
+                  aria-label="Log out of account"
+                  title="Logout"
                 >
-                  <LogOut size={20} />
+                  <LogOut size={19} />
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu dropdown */}
         {open && (
-          <div className="md:hidden pb-3 flex flex-col gap-1">
+          <div className="md:hidden py-3 px-1 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-1 animate-fadeIn">
             {links.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `px-3 py-2 rounded-md text-sm font-medium ${
+                  `px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     isActive
-                      ? 'bg-brand-blue text-white'
-                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      ? 'bg-brand-blue text-white shadow-sm'
+                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`
                 }
               >
