@@ -12,14 +12,15 @@ export default function Signup() {
     fullName: '', phone: '', department: '', yearOfStudy: 1,
   });
   const [show, setShow] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const signup = useAuthStore((s) => s.signup);
-  const loading = useAuthStore((s) => s.loading);
   const navigate = useNavigate();
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
     if (form.password !== form.confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -28,6 +29,7 @@ export default function Signup() {
       toast.error('Password must be at least 6 characters');
       return;
     }
+    setSubmitting(true);
     try {
       const me = await signup({
         rollNumber:  form.rollNumber.trim(),
@@ -42,6 +44,8 @@ export default function Signup() {
       navigate('/student', { replace: true });
     } catch (err) {
       toast.error(err.message || 'Signup failed');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -92,10 +96,10 @@ export default function Signup() {
           <div className="sm:col-span-2">
             <button
               type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-md brand-gradient text-white font-semibold disabled:opacity-60"
+              disabled={submitting}
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-md brand-gradient text-white font-semibold disabled:opacity-60 cursor-pointer"
             >
-              <UserPlus size={18} /> {loading ? 'Creating...' : 'Create account'}
+              <UserPlus size={18} /> {submitting ? 'Creating...' : 'Create account'}
             </button>
           </div>
         </form>

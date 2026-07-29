@@ -9,13 +9,14 @@ import Logo from '../../components/common/Logo';
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [show, setShow]       = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const login = useAuthStore((s) => s.login);
-  const loading = useAuthStore((s) => s.loading);
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     try {
       const me = await login(username.trim(), password);
       toast.success(`Welcome back, ${me.fullName || me.username}!`);
@@ -23,6 +24,8 @@ export default function Login() {
       navigate(next, { replace: true });
     } catch (err) {
       toast.error(err.message || 'Login failed');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -73,10 +76,10 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-md brand-gradient text-white font-semibold disabled:opacity-60"
+            disabled={submitting}
+            className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-md brand-gradient text-white font-semibold disabled:opacity-60 cursor-pointer"
           >
-            <LogIn size={18} /> {loading ? 'Signing in...' : 'Sign in'}
+            <LogIn size={18} /> {submitting ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 

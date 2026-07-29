@@ -11,43 +11,24 @@ const useAuthStore = create((set, get) => ({
   fetchMe: async () => {
     set({ loading: true, error: null });
 
-    // Safety unblock: If backend takes longer than 4s to respond (e.g. Render cold boot),
-    // unblock UI so mobile users aren't trapped on a blank full-screen loading spinner.
+    // Safety unblock: If backend takes longer than 3s to respond,
+    // unblock UI so users aren't trapped on loading spinner or disabled form.
     const fallbackTimer = setTimeout(() => {
-      if (!get().initialized) {
-        set({ initialized: true });
-      }
-    }, 4000);
+      set({ initialized: true, loading: false });
+    }, 3000);
 
-    let attempts = 0;
-    const maxAttempts = 2;
     try {
-      while (attempts < maxAttempts) {
-        try {
-          const me = await api.get('/auth/me', { timeout: 45000 });
-          clearTimeout(fallbackTimer);
-          set({ user: me, loading: false, initialized: true, error: null });
-          return me;
-        } catch (e) {
-          attempts++;
-          const isNetworkOrGatewayError =
-            e.status === 502 ||
-            e.status === 504 ||
-            e.message?.includes('timeout') ||
-            e.message?.includes('Network') ||
-            !e.status;
-
-          if (isNetworkOrGatewayError && attempts < maxAttempts) {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            continue;
-          }
-          clearTimeout(fallbackTimer);
-          set({ user: null, loading: false, initialized: true, error: e.status === 401 ? null : e.message });
-          return null;
-        }
-      }
+      const me = await api.get('/auth/me', { timeout: 5000 });
+      clearTimeout(fallbackTimer);
+      set({ user: me, loading: false, initialized: true, error: null });
+      return me;
+    } catch (e) {
+      clearTimeout(fallbackTimer);
+      set({ user: null, loading: false, initialized: true, error: e.status === 401 ? null : e.message });
+      return null;
     } finally {
       clearTimeout(fallbackTimer);
+      set({ loading: false, initialized: true });
     }
   },
 

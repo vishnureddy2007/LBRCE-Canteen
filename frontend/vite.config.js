@@ -16,11 +16,11 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'https://lbrce-canteen-api.onrender.com',
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:8080',
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'https://lbrce-canteen-api.onrender.com',
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:8080',
         changeOrigin: true,
       },
     },
