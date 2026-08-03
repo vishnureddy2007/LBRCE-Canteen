@@ -9,6 +9,7 @@ import Logo from '../../components/common/Logo';
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [show, setShow] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
