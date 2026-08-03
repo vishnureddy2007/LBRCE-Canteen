@@ -234,6 +234,7 @@ public class OrderService {
         Instant to   = day.plusDays(1).atStartOfDay(ZoneId.of("Asia/Kolkata")).toInstant();
         long seq = orderRepository.countByPlacedAtGreaterThanEqualAndPlacedAtLessThan(from, to) + 1L;
         String date = day.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        return String.format("ORD-%s-%04d", date, seq);
+        String suffix = String.format("%03d", java.util.concurrent.ThreadLocalRandom.current().nextInt(1000));
+        return String.format("ORD-%s-%04d-%s", date, seq, suffix);
     }
 }

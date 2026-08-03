@@ -109,7 +109,7 @@ function FoodGridPlaceholder({ food }) {
     <div className="card rounded-xl bg-white dark:bg-slate-800 shadow-card border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
       <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-700 overflow-hidden">
         <img
-          src={getImageUrl(food.images && food.images[0])}
+          src={getImageUrl(food.images && food.images[0], food.name)}
           alt={food.name}
           onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80'; }}
           className="w-full h-full object-cover"

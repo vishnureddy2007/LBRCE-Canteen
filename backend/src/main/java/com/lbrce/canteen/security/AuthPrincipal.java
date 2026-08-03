@@ -18,6 +18,9 @@ import java.util.Optional;
 public record AuthPrincipal(Long id, String loginId, String role) {
 
     public static AuthPrincipal from(Authentication auth) {
+        if (auth == null) {
+            return new AuthPrincipal(null, "anonymous", "ANONYMOUS");
+        }
         String role = "UNKNOWN";
         Long id = null;
         String loginId = auth.getName();

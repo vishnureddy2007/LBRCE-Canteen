@@ -36,7 +36,7 @@ const FOOD_NAME_IMAGE_MAP = [
   { keywords: ['bonda', 'mysore bonda'], url: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?w=600&auto=format&fit=crop&q=80' },
   { keywords: ['poori', 'puri'], url: 'https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=600&auto=format&fit=crop&q=80' },
   { keywords: ['pongal'], url: 'https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?w=600&auto=format&fit=crop&q=80' },
-  { keywords: ['vada', 'medu vada'], url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80' },
+  { keywords: ['vada', 'medu vada'], url: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80' },
   { keywords: ['upma'], url: 'https://images.unsplash.com/photo-1617692855027-33b14f061079?w=600&auto=format&fit=crop&q=80' },
   { keywords: ['lemon rice'], url: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&auto=format&fit=crop&q=80' },
   { keywords: ['chicken biryani'], url: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=600&auto=format&fit=crop&q=80' },

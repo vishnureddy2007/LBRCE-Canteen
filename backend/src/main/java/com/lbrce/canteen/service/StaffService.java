@@ -27,7 +27,7 @@ public class StaffService {
 
     @Transactional(readOnly = true)
     public Page<StaffResponse> list(String q, Pageable pageable) {
-        return staffRepository.findAll(pageable).map(mapper::toStaff);
+        return staffRepository.search(q, pageable).map(mapper::toStaff);
     }
 
     @Transactional

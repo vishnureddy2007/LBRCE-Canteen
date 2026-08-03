@@ -29,14 +29,7 @@ public class StudentService {
 
     @Transactional(readOnly = true)
     public Page<StudentResponse> list(String q, Pageable pageable) {
-        if (q == null || q.isBlank()) return studentRepository.findAll(pageable).map(mapper::toStudent);
-        String needle = q.toLowerCase();
-        return studentRepository.findAll(pageable)
-                .map(mapper::toStudent)
-                .map(s -> (s.fullName() != null && s.fullName().toLowerCase().contains(needle))
-                        || (s.rollNumber() != null && s.rollNumber().toLowerCase().contains(needle))
-                        || (s.email() != null && s.email().toLowerCase().contains(needle))
-                        ? s : null);
+        return studentRepository.search(q, pageable).map(mapper::toStudent);
     }
 
     @Transactional

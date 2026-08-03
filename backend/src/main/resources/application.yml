@@ -15,7 +15,7 @@ server:
       cookie:
         name: LBRCESESSION
         same-site: ${COOKIE_SAME_SITE:lax}
-        secure: ${COOKIE_SECURE:true}
+        secure: ${COOKIE_SECURE:false}
         http-only: true
 
 spring:

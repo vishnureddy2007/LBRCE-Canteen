@@ -44,7 +44,16 @@ public class ReportService {
         BigDecimal total = BigDecimal.ZERO;
         long totalOrders = 0L;
         for (Object[] r : rows) {
-            LocalDate d = ((Date) r[0]).toLocalDate();
+            LocalDate d;
+            if (r[0] instanceof LocalDate ld) {
+                d = ld;
+            } else if (r[0] instanceof Date sd) {
+                d = sd.toLocalDate();
+            } else if (r[0] instanceof java.util.Date ud) {
+                d = ud.toInstant().atZone(ZoneId.of("Asia/Kolkata")).toLocalDate();
+            } else {
+                d = LocalDate.parse(r[0].toString());
+            }
             BigDecimal rev = (BigDecimal) r[1];
             Long count = ((Number) r[2]).longValue();
             buckets.add(new SalesBucket(d, rev, count));

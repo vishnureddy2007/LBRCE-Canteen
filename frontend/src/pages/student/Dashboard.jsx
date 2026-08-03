@@ -19,7 +19,7 @@ export default function StudentDashboard() {
     (async () => {
       try {
         const [orders, anns] = await Promise.all([
-          api.get('/orders/my?page=0&size=5'),
+          api.get('/orders/my?page=0&size=5').catch(() => ({ content: [], totalElements: 0 })),
           api.get('/announcements').catch(() => []),
         ]);
         setRecent(orders.content || []);
