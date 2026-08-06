@@ -14,30 +14,41 @@ import RoleRoute   from './components/layout/RoleRoute';
 import Login       from './pages/auth/Login';
 import Signup      from './pages/auth/Signup';
 
+// Helper for resilient lazy component loading
+const lazyWithRetry = (importFn) =>
+  lazy(async () => {
+    try {
+      return await importFn();
+    } catch (err) {
+      console.warn('Dynamic chunk import failed, retrying...', err);
+      return await importFn();
+    }
+  });
+
 // Lazy-loaded Student pages
-const StudentDashboard = lazy(() => import('./pages/student/Dashboard'));
-const Menu             = lazy(() => import('./pages/student/Menu'));
-const Checkout         = lazy(() => import('./pages/student/Checkout'));
-const MyOrders         = lazy(() => import('./pages/student/MyOrders'));
-const OrderTrack       = lazy(() => import('./pages/student/OrderTrack'));
-const Profile          = lazy(() => import('./pages/student/Profile'));
-const Feedback         = lazy(() => import('./pages/student/Feedback'));
+const StudentDashboard = lazyWithRetry(() => import('./pages/student/Dashboard'));
+const Menu             = lazyWithRetry(() => import('./pages/student/Menu'));
+const Checkout         = lazyWithRetry(() => import('./pages/student/Checkout'));
+const MyOrders         = lazyWithRetry(() => import('./pages/student/MyOrders'));
+const OrderTrack       = lazyWithRetry(() => import('./pages/student/OrderTrack'));
+const Profile          = lazyWithRetry(() => import('./pages/student/Profile'));
+const Feedback         = lazyWithRetry(() => import('./pages/student/Feedback'));
 
 // Lazy-loaded Staff pages
-const StaffDashboard   = lazy(() => import('./pages/staff/Dashboard'));
-const OrderQueue       = lazy(() => import('./pages/staff/OrderQueue'));
-const DailyOrders      = lazy(() => import('./pages/staff/DailyOrders'));
-const Availability     = lazy(() => import('./pages/staff/Availability'));
+const StaffDashboard   = lazyWithRetry(() => import('./pages/staff/Dashboard'));
+const OrderQueue       = lazyWithRetry(() => import('./pages/staff/OrderQueue'));
+const DailyOrders      = lazyWithRetry(() => import('./pages/staff/DailyOrders'));
+const Availability     = lazyWithRetry(() => import('./pages/staff/Availability'));
 
 // Lazy-loaded Admin pages
-const AdminDashboard   = lazy(() => import('./pages/admin/Dashboard'));
-const ManageStudents   = lazy(() => import('./pages/admin/ManageStudents'));
-const ManageStaff      = lazy(() => import('./pages/admin/ManageStaff'));
-const ManageFood       = lazy(() => import('./pages/admin/ManageFood'));
-const AdminOrders      = lazy(() => import('./pages/admin/Orders'));
-const Reports          = lazy(() => import('./pages/admin/Reports'));
-const Announcements    = lazy(() => import('./pages/admin/Announcements'));
-const Offers           = lazy(() => import('./pages/admin/Offers'));
+const AdminDashboard   = lazyWithRetry(() => import('./pages/admin/Dashboard'));
+const ManageStudents   = lazyWithRetry(() => import('./pages/admin/ManageStudents'));
+const ManageStaff      = lazyWithRetry(() => import('./pages/admin/ManageStaff'));
+const ManageFood       = lazyWithRetry(() => import('./pages/admin/ManageFood'));
+const AdminOrders      = lazyWithRetry(() => import('./pages/admin/Orders'));
+const Reports          = lazyWithRetry(() => import('./pages/admin/Reports'));
+const Announcements    = lazyWithRetry(() => import('./pages/admin/Announcements'));
+const Offers           = lazyWithRetry(() => import('./pages/admin/Offers'));
 
 export default function App() {
   const fetchMe = useAuthStore((s) => s.fetchMe);

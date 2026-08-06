@@ -2,9 +2,10 @@ import { Outlet, Navigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 
 export default function ProtectedRoute({ children }) {
-  const { user, loading, initialized } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
+  const initialized = useAuthStore((s) => s.initialized);
 
-  if (!initialized || loading) {
+  if (!initialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-orange"></div>

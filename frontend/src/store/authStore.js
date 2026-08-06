@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import api from '../api/axios';
 
+let inFlightFetchMePromise = null;
+
 const useAuthStore = create((set, get) => ({
   user: null,
   loading: false,
@@ -9,37 +11,56 @@ const useAuthStore = create((set, get) => ({
 
   /** Fetch the current user from /api/auth/me. Returns the user (or null). */
   fetchMe: async () => {
+    // Deduplicate in-flight calls
+    if (inFlightFetchMePromise) {
+      return inFlightFetchMePromise;
+    }
+
     set({ loading: true, error: null });
 
-    // Safety unblock: If backend takes longer than 3s to respond,
-    // unblock UI so users aren't trapped on loading spinner or disabled form.
+    let fallbackFired = false;
     const fallbackTimer = setTimeout(() => {
+      fallbackFired = true;
       set({ initialized: true, loading: false });
     }, 3000);
 
-    try {
-      const me = await api.get('/auth/me', { timeout: 5000 });
-      clearTimeout(fallbackTimer);
-      set({ user: me, loading: false, initialized: true, error: null });
-      return me;
-    } catch (e) {
-      clearTimeout(fallbackTimer);
-      set({ user: null, loading: false, initialized: true, error: e.status === 401 ? null : e.message });
-      return null;
-    } finally {
-      clearTimeout(fallbackTimer);
-      set({ loading: false, initialized: true });
-    }
+    inFlightFetchMePromise = (async () => {
+      try {
+        const me = await api.get('/auth/me', { timeout: 7000 });
+        clearTimeout(fallbackTimer);
+        set({ user: me, loading: false, initialized: true, error: null });
+        return me;
+      } catch (e) {
+        clearTimeout(fallbackTimer);
+        // Only reset user to null if unauthorized or server error, but don't overwrite if fallback already fired with valid user
+        const is401 = e.status === 401;
+        set({
+          user: is401 ? null : get().user,
+          loading: false,
+          initialized: true,
+          error: is401 ? null : (e.message || 'Auth check failed'),
+        });
+        return null;
+      } finally {
+        clearTimeout(fallbackTimer);
+        inFlightFetchMePromise = null;
+        if (!fallbackFired) {
+          set({ loading: false, initialized: true });
+        }
+      }
+    })();
+
+    return inFlightFetchMePromise;
   },
 
   login: async (username, password) => {
     set({ loading: true, error: null });
     try {
       const me = await api.post('/auth/login', { username, password });
-      set({ user: me, loading: false, initialized: true });
+      set({ user: me, loading: false, initialized: true, error: null });
       return me;
     } catch (e) {
-      set({ loading: false, error: e.message });
+      set({ loading: false, error: e.message || 'Login failed' });
       throw e;
     }
   },
@@ -48,17 +69,17 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const me = await api.post('/auth/signup', payload);
-      set({ user: me, loading: false, initialized: true });
+      set({ user: me, loading: false, initialized: true, error: null });
       return me;
     } catch (e) {
-      set({ loading: false, error: e.message });
+      set({ loading: false, error: e.message || 'Signup failed' });
       throw e;
     }
   },
 
   logout: async () => {
     try { await api.post('/auth/logout'); } catch (_) { /* ignore */ }
-    set({ user: null });
+    set({ user: null, loading: false, error: null });
   },
 
   isRole: (role) => get().user?.role === role,

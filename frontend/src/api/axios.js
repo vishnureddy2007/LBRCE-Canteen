@@ -9,6 +9,15 @@ const api = axios.create({
   timeout: 45000,
 });
 
+let unauthorizedTimer = null;
+const dispatchUnauthorized = () => {
+  if (unauthorizedTimer) return;
+  unauthorizedTimer = setTimeout(() => {
+    unauthorizedTimer = null;
+  }, 500);
+  window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+};
+
 // Response interceptor: unwrap the standard envelope so callers see just the
 // payload, and surface backend errors as rejected promises with a clean
 // message string.
@@ -32,8 +41,8 @@ api.interceptors.response.use(
     err.status = status;
     err.errors = body?.errors;
     if (status === 401 && !error.config?.url?.includes('/auth/me') && !error.config?.url?.includes('/auth/login')) {
-      // surface auth events for the store to handle
-      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+      // surface auth events for the store to handle (debounced)
+      dispatchUnauthorized();
     }
     return Promise.reject(err);
   }
