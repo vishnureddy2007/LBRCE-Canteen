@@ -56,7 +56,10 @@ const useAuthStore = create((set, get) => ({
   login: async (username, password) => {
     set({ loading: true, error: null });
     try {
-      const me = await api.post('/auth/login', { username, password });
+      const me = await api.post('/auth/login', { username, password }, { timeout: 25000 });
+      if (!me || typeof me !== 'object' || !me.role) {
+        throw new Error('Server returned invalid auth response. Please retry.');
+      }
       set({ user: me, loading: false, initialized: true, error: null });
       return me;
     } catch (e) {
@@ -68,7 +71,10 @@ const useAuthStore = create((set, get) => ({
   signup: async (payload) => {
     set({ loading: true, error: null });
     try {
-      const me = await api.post('/auth/signup', payload);
+      const me = await api.post('/auth/signup', payload, { timeout: 25000 });
+      if (!me || typeof me !== 'object' || !me.role) {
+        throw new Error('Server returned invalid auth response. Please retry.');
+      }
       set({ user: me, loading: false, initialized: true, error: null });
       return me;
     } catch (e) {
