@@ -72,7 +72,7 @@ export const getImageUrl = (path, foodName = '') => {
 
   // 2. Relative API upload path handling
   if (path && !path.includes('placeholder-')) {
-    const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+    const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
     if (apiBase.startsWith('http://') || apiBase.startsWith('https://')) {
       try {
         const url = new URL(apiBase);
@@ -81,6 +81,9 @@ export const getImageUrl = (path, foodName = '') => {
       } catch (e) {
         // ignore fallback
       }
+    }
+    if (path.startsWith('uploads/') || path.startsWith('/uploads/')) {
+      return path.startsWith('/') ? path : `/${path}`;
     }
   }
 

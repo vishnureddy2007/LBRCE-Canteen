@@ -24,8 +24,11 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<AuthResponse>> signup(@RequestBody SignupRequest req) {
-        return ResponseEntity.status(201).body(ApiResponse.ok(authService.signup(req), "Account created"));
+    public ResponseEntity<ApiResponse<AuthResponse>> signup(@Valid @RequestBody SignupRequest req,
+                                                            HttpServletRequest httpRequest) {
+        // Sign-up and login are one transaction from the browser's point of
+        // view: the response also establishes the server session.
+        return ResponseEntity.status(201).body(ApiResponse.ok(authService.signup(req, httpRequest), "Account created"));
     }
 
     @PostMapping("/login")

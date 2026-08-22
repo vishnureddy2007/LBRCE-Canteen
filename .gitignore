@@ -42,6 +42,7 @@ target/
 *.war
 *.ear
 .mvn/wrapper/maven-wrapper.jar
+.m2-repository/
 
 # Local file uploads (keep only the placeholder image)
 backend/uploads/

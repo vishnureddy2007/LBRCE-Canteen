@@ -18,35 +18,26 @@ const useAuthStore = create((set, get) => ({
 
     set({ loading: true, error: null });
 
-    let fallbackFired = false;
-    const fallbackTimer = setTimeout(() => {
-      fallbackFired = true;
-      set({ initialized: true, loading: false });
-    }, 3000);
-
     inFlightFetchMePromise = (async () => {
       try {
         const me = await api.get('/auth/me', { timeout: 7000 });
-        clearTimeout(fallbackTimer);
         set({ user: me, loading: false, initialized: true, error: null });
         return me;
       } catch (e) {
-        clearTimeout(fallbackTimer);
-        // Only reset user to null if unauthorized or server error, but don't overwrite if fallback already fired with valid user
+        // Do not redirect before the session check has settled. On a first
+        // load any failure leaves the user unauthenticated; after a session
+        // exists, transient network failures do not discard it.
         const is401 = e.status === 401;
         set({
-          user: is401 ? null : get().user,
+          user: is401 || !get().initialized ? null : get().user,
           loading: false,
           initialized: true,
           error: is401 ? null : (e.message || 'Auth check failed'),
         });
         return null;
       } finally {
-        clearTimeout(fallbackTimer);
         inFlightFetchMePromise = null;
-        if (!fallbackFired) {
-          set({ loading: false, initialized: true });
-        }
+        set({ loading: false, initialized: true });
       }
     })();
 

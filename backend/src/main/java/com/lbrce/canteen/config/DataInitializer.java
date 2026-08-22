@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -33,6 +35,7 @@ import java.util.Optional;
  * file is still useful as documentation and for non-Spring tooling.</p>
  */
 @Component
+@Profile("dev")
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
@@ -43,6 +46,12 @@ public class DataInitializer implements CommandLineRunner {
     private final OfferRepository offerRepository;
     private final AnnouncementRepository announcementRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${APP_DEV_SEED_ADMIN_USERNAME:admin}")
+    private String seedAdminUsername;
+
+    @Value("${APP_DEV_SEED_ADMIN_PASSWORD:}")
+    private String seedAdminPassword;
 
     public DataInitializer(AdminRepository adminRepository,
                            CategoryRepository categoryRepository,
@@ -60,6 +69,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (seedAdminPassword.isBlank()) {
+            log.warn("Demo data was not seeded: set APP_DEV_SEED_ADMIN_PASSWORD when using the dev profile");
+            return;
+        }
         Admin admin = seedAdmin();
         List<Category> categories = seedCategories();
         seedFood(categories);
@@ -68,25 +81,25 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private Admin seedAdmin() {
-        Optional<Admin> existing = adminRepository.findByUsernameOrEmail("vishnureddy@gmail.com", "vishnureddy@gmail.com");
+        Optional<Admin> existing = adminRepository.findByUsernameOrEmail(seedAdminUsername, seedAdminUsername);
         if (existing.isPresent()) {
             Admin a = existing.get();
-            a.setPasswordHash(passwordEncoder.encode("Bunny@07"));
+            a.setPasswordHash(passwordEncoder.encode(seedAdminPassword));
             a.setFullName("Canteen Administrator");
             a.setRole("ADMIN");
             Admin saved = adminRepository.save(a);
-            log.info("Reset/verified default admin credentials: vishnureddy@gmail.com / Bunny@07");
+            log.info("Reset/verified development admin account: {}", seedAdminUsername);
             return saved;
         } else {
             Admin a = new Admin();
-            a.setUsername("vishnureddy@gmail.com");
-            a.setEmail("vishnureddy@gmail.com");
-            a.setPasswordHash(passwordEncoder.encode("Bunny@07"));
+            a.setUsername(seedAdminUsername);
+            a.setEmail(seedAdminUsername);
+            a.setPasswordHash(passwordEncoder.encode(seedAdminPassword));
             a.setFullName("Canteen Administrator");
             a.setPhone("9876543210");
             a.setRole("ADMIN");
             Admin saved = adminRepository.save(a);
-            log.info("Seeded default admin: vishnureddy@gmail.com / Bunny@07");
+            log.info("Seeded development admin: {}", seedAdminUsername);
             return saved;
         }
     }

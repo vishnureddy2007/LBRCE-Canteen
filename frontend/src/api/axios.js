@@ -1,9 +1,11 @@
 import axios from 'axios';
 
-// Centralized axios instance. withCredentials is required so the session
-// cookie set by Spring Security is sent on cross-origin requests during dev.
+// The public application always talks to its own origin. Vercel forwards
+// /api and /uploads to the backend, keeping browser sessions same-origin.
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: API_BASE,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
   timeout: 45000,
@@ -50,13 +52,13 @@ api.interceptors.response.use(
     } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
       msg = 'Server connection timed out while waking up. Please wait 10 seconds and try again.';
     } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
-      msg = 'Unable to connect to backend server. Please verify backend is active.';
+      msg = 'Server temporarily unavailable. Please check your connection and try again.';
     }
 
     const err = new Error(msg);
     err.status = status;
     err.errors = body?.errors;
-    if (status === 401 && !error.config?.url?.includes('/auth/me') && !error.config?.url?.includes('/auth/login')) {
+    if (status === 401 && !error.config?.url?.includes('/auth/me') && !error.config?.url?.includes('/auth/login') && !error.config?.url?.includes('/auth/signup')) {
       // surface auth events for the store to handle (debounced)
       dispatchUnauthorized();
     }

@@ -53,7 +53,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse signup(SignupRequest req) {
+    public AuthResponse signup(SignupRequest req, HttpServletRequest httpRequest) {
         if (req.rollNumber() == null || req.rollNumber().isBlank()
                 || req.email() == null || req.password() == null || req.password().length() < 6) {
             throw new BadRequestException("Roll number, email and password (min 6 chars) are required");
@@ -72,8 +72,12 @@ public class AuthService {
         s.setPhone(req.phone());
         s.setDepartment(req.department());
         s.setYearOfStudy(req.yearOfStudy());
-        studentRepository.save(s);
-        return new AuthResponse(s.getId(), s.getRollNumber(), s.getFullName(), s.getEmail(), "STUDENT");
+        studentRepository.saveAndFlush(s);
+
+        // A successful sign-up must establish the same server-side session as
+        // a login. Previously the SPA treated the response as authenticated,
+        // but a page refresh immediately lost that client-only state.
+        return login(new LoginRequest(s.getRollNumber(), req.password()), httpRequest);
     }
 
     public AuthResponse login(LoginRequest req, HttpServletRequest httpRequest) {

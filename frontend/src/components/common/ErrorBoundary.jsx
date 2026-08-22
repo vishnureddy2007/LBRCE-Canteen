@@ -25,7 +25,7 @@ export default class ErrorBoundary extends React.Component {
               Something went wrong
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {this.state.error?.message || 'An unexpected rendering error occurred.'}
+              We could not load this screen. Your active session and cart are safe; please try again.
             </p>
             <button
               onClick={() => {

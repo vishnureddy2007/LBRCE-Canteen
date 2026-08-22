@@ -2,6 +2,25 @@
 
 A modern full-stack web application developed to digitize and streamline the canteen operations at **Lakireddy Bali Reddy College of Engineering (LBRCE)**. The system provides a seamless food ordering experience for students while enabling canteen staff and administrators to efficiently manage orders, menus, and sales.
 
+## Production architecture
+
+The production app is a single Spring Boot deployment. Its Docker build embeds the
+React frontend in the backend, so the browser calls relative `/api` and `/uploads`
+paths on one HTTPS origin. This avoids cross-site cookie issues and ensures users
+never need to know a separate backend URL.
+
+```text
+Student browser → Spring Boot (React + API) → MySQL
+                                      └──→ Cloudinary (optional food-image uploads)
+```
+
+Authentication has explicit initialization states: the client checks the session
+before protected routes decide whether to redirect, login and sign-up establish a
+server session, and a transient API error never causes an automatic retry loop.
+
+For exact single-service, MySQL, and optional Cloudinary configuration, see
+[DEPLOYMENT.md](DEPLOYMENT.md) and the non-secret templates in `.env.example`.
+
 ---
 
 ## 📌 Features
@@ -60,8 +79,7 @@ A modern full-stack web application developed to digitize and streamline the can
 ### Tools & Services
 - Maven
 - Git & GitHub
-- Vercel (Frontend Deployment)
-- Render (Backend Deployment)
+- One Docker-hosted Spring Boot application (frontend + backend)
 
 ---
 

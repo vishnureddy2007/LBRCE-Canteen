@@ -2,30 +2,12 @@
 -- LBRCE Canteen Management System
 -- Seed Data
 --
--- Default admin credentials:
---   username: vishnureddy@gmail.com
---   password: Bunny@07
---
--- The password_hash below is a BCrypt hash of "Bunny@07" generated with
--- strength 10. If you need to regenerate it, you can use the Java helper
--- BCrypt.hashpw("Bunny@07", BCrypt.gensalt(10)) from the backend.
+-- This file intentionally does not create an administrator with a known
+-- password. The first production administrator is created from the private
+-- BOOTSTRAP_ADMIN_* deployment variables.
 -- =====================================================================
 
 USE lbrce_canteen;
-
--- ---------------------------------------------------------------------
--- Admin
--- ---------------------------------------------------------------------
--- BCrypt hash of "Bunny@07"
-INSERT INTO admins (username, email, password_hash, full_name, phone)
-VALUES (
-    'vishnureddy@gmail.com',
-    'vishnureddy@gmail.com',
-    '$2a$10$4w5sg2P8wwxWEs869Kh2RuEnoneTW4bGsMiGmOKjibP8X0fjUIJH.',
-    'LBRCE Canteen Admin',
-    '+91-9876543210'
-)
-ON DUPLICATE KEY UPDATE username = username;
 
 -- ---------------------------------------------------------------------
 -- Categories
