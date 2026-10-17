@@ -33,7 +33,7 @@ export default function FoodCard({ food }) {
         )}
 
         <img
-          src={imageError ? 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80' : imageUrl}
+          src={imageError ? '/uploads/placeholder_food.png' : imageUrl}
           alt={food.name}
           onLoad={() => setImageLoaded(true)}
           onError={() => {

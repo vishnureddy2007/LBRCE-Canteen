@@ -9,9 +9,9 @@ export default function CartItem({ item }) {
   return (
     <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
       <img
-        src={getImageUrl(item.image)}
+        src={getImageUrl(item.image, item.name)}
         alt={item.name}
-        onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80'; }}
+        onError={(e) => { e.currentTarget.src = '/uploads/placeholder_food.png'; }}
         className="w-14 h-14 rounded-md object-cover"
       />
       <div className="flex-1 min-w-0">

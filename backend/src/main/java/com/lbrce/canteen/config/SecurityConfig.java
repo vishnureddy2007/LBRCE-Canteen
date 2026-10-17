@@ -133,7 +133,10 @@ public class SecurityConfig {
                         "/api/health",
                         "/api/foods",
                         "/api/foods/**",
+                        "/api/food",
+                        "/api/food/**",
                         "/api/categories",
+                        "/api/categories/**",
                         "/api/files/**",
                         "/uploads/**",
                         "/error"

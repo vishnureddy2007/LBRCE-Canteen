@@ -99,9 +99,9 @@ export default function Availability() {
             >
               <div className="w-14 h-14 rounded-md bg-slate-100 dark:bg-slate-700 overflow-hidden flex-shrink-0">
                 <img
-                  src={getImageUrl(f.images && f.images[0])}
+                  src={getImageUrl(f.images && f.images[0], f.name)}
                   alt={f.name}
-                  onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80'; }}
+                  onError={(e) => { e.currentTarget.src = '/uploads/placeholder_food.png'; }}
                   className="w-full h-full object-cover"
                 />
               </div>

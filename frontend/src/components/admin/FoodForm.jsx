@@ -93,7 +93,12 @@ export default function FoodForm({ food, categories, onClose, onSaved }) {
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Image</label>
             {form.imageUrl ? (
               <div className="flex items-center gap-3">
-                <img src={getImageUrl(form.imageUrl)} alt="" className="w-20 h-20 object-cover rounded-md" />
+                <img
+                  src={getImageUrl(form.imageUrl, form.name)}
+                  alt={form.name || "Food preview"}
+                  onError={(e) => { e.currentTarget.src = '/uploads/placeholder_food.png'; }}
+                  className="w-20 h-20 object-cover rounded-md"
+                />
                 <button type="button" onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))} className="text-xs text-red-600">Remove</button>
               </div>
             ) : (

@@ -28,58 +28,55 @@ public class DtoMapper {
         List<String> images = f.getImages() == null ? List.of()
                 : f.getImages().stream().map(FoodImage::getImageUrl).collect(Collectors.toList());
         
-        // Overwrite if empty or if it is a default Unsplash seed image / generic placeholder
-        boolean isDefaultImage = images.isEmpty() || images.stream().anyMatch(url -> 
-            url.startsWith("https://images.unsplash.com") || url.contains("placeholder-")
+        // Check if images are empty or contain old Unsplash seed URLs / broken placeholders
+        boolean needsResolvedImage = images.isEmpty() || images.stream().anyMatch(url ->
+                url.startsWith("https://images.unsplash.com") || url.contains("placeholder-")
         );
-        
-        if (isDefaultImage && f.getId() != null) {
+
+        if (needsResolvedImage && f.getName() != null) {
             String name = f.getName().toLowerCase();
-            String placeholder = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80"; // Default fallback
-            
+            String matchedImage = "/uploads/placeholder_food.png";
+
             if (name.contains("idli")) {
-                placeholder = "/uploads/idli_sambar.png"; // Soft white idlis served with hot sambar and coconut chutney on a steel plate
-            } else if (name.contains("poori")) {
-                placeholder = "/uploads/poori_curry.png"; // Golden fluffy puris with potato curry/masala
+                matchedImage = "/uploads/idli_sambar.png";
+            } else if (name.contains("poori") || name.contains("puri")) {
+                matchedImage = "/uploads/poori_curry.png";
             } else if (name.contains("upma")) {
-                placeholder = "/uploads/upma.png"; // South Indian vegetable upma with mustard seeds, curry leaves, vegetables
+                matchedImage = "/uploads/upma.png";
             } else if (name.contains("chicken biryani")) {
-                placeholder = "/uploads/chicken_biryani.png"; // Chicken biryani with long-grain rice, chicken pieces, boiled egg
+                matchedImage = "/uploads/chicken_biryani.png";
             } else if (name.contains("veg biryani") || name.contains("biryani")) {
-                placeholder = "/uploads/veg_biryani.png"; // Aromatic vegetable biryani
+                matchedImage = "/uploads/veg_biryani.png";
+            } else if (name.contains("chicken fried rice")) {
+                matchedImage = "/uploads/chicken_fried_rice.png";
             } else if (name.contains("veg fried rice") || (name.contains("fried") && name.contains("rice"))) {
-                placeholder = "/uploads/veg_fried_rice.png"; // Indo-Chinese vegetable fried rice
+                matchedImage = "/uploads/veg_fried_rice.png";
+            } else if (name.contains("chicken manchuria")) {
+                matchedImage = "/uploads/chicken_manchuria.png";
+            } else if (name.contains("veg manchuria") || name.contains("manchuria")) {
+                matchedImage = "/uploads/veg_manchuria.png";
+            } else if (name.contains("chicken noodles")) {
+                matchedImage = "/uploads/chicken_noodles.png";
+            } else if (name.contains("veg noodles") || name.contains("noodles") || name.contains("maggi")) {
+                matchedImage = "/uploads/veg_noodles.png";
+            } else if (name.contains("egg puff") || name.contains("puff")) {
+                matchedImage = "/uploads/egg_puff.png";
             } else if (name.contains("meals") || name.contains("thali")) {
-                placeholder = "/uploads/meals_thali.png"; // Complete South Indian thali
+                matchedImage = "/uploads/meals_thali.png";
             } else if (name.contains("samosa")) {
-                placeholder = "/uploads/samosa.png"; // Crispy triangular samosas served with green chutney
+                matchedImage = "/uploads/samosa.png";
             } else if (name.contains("vada pav") || name.contains("vadapav")) {
-                placeholder = "/uploads/vada_pav.png"; // Mumbai-style vada pav
-            } else if (name.contains("maggi") || name.contains("noodles")) {
-                placeholder = "/uploads/masala_maggi.png"; // Bowl of masala Maggi noodles
+                matchedImage = "/uploads/vada_pav.png";
             } else if (name.contains("coffee")) {
-                placeholder = "/uploads/filter_coffee.png"; // South Indian filter coffee in steel tumbler and dabarah
+                matchedImage = "/uploads/filter_coffee.png";
             } else if (name.contains("tea") || name.contains("chai")) {
-                placeholder = "/uploads/masala_chai.png"; // Hot Indian masala tea in glass/cup
-            } else if (name.contains("lime soda") || name.contains("lemon")) {
-                placeholder = "/uploads/fresh_lime_soda.png"; // Lime soda glass with lemon slices
+                matchedImage = "/uploads/masala_chai.png";
+            } else if (name.contains("lime soda") || name.contains("lemon") || name.contains("soda")) {
+                matchedImage = "/uploads/fresh_lime_soda.png";
             } else if (name.contains("lassi")) {
-                placeholder = "/uploads/mango_lassi.png"; // Mango lassi
-            } else {
-                String categoryName = f.getCategory() == null ? "default" : f.getCategory().getName().toLowerCase();
-                if (categoryName.contains("breakfast")) {
-                    placeholder = "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600&auto=format&fit=crop&q=80";
-                } else if (categoryName.contains("lunch")) {
-                    placeholder = "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?w=600&auto=format&fit=crop&q=80";
-                } else if (categoryName.contains("snack")) {
-                    placeholder = "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=600&auto=format&fit=crop&q=80";
-                } else if (categoryName.contains("beverage")) {
-                    placeholder = "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?w=600&auto=format&fit=crop&q=80";
-                } else if (categoryName.contains("fast")) {
-                    placeholder = "https://images.unsplash.com/photo-1525755662778-989d0524087e?w=600&auto=format&fit=crop&q=80";
-                }
+                matchedImage = "/uploads/mango_lassi.png";
             }
-            images = List.of(placeholder);
+            images = List.of(matchedImage);
         }
         return new FoodResponse(
                 f.getId(),

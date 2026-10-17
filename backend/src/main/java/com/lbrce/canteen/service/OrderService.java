@@ -110,7 +110,7 @@ public class OrderService {
         // Students can only see their own orders
         if ("STUDENT".equals(principalRole)) {
             Student s = o.getStudent();
-            if (s == null || !principalName.equals(s.getRollNumber()) && !principalName.equals(s.getEmail())) {
+            if (s == null || (!principalName.equals(s.getRollNumber()) && !principalName.equals(s.getEmail()))) {
                 throw new ForbiddenException("You can only view your own orders");
             }
         }

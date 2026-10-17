@@ -1,20 +1,22 @@
--- Update local food images with high-quality, unique Unsplash photo URLs for all LBRCE Canteen items
+-- Safe, reversible image URL migration for TiDB Cloud
+-- Updates food_images table so that each food item references its matching dish photography.
+-- Does NOT drop tables, does NOT delete food items, categories, or orders.
 
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Idli%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Dosa%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Poori%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1617692855027-33b14f061079?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Upma%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name = 'Veg Biryani' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name = 'Chicken Biryani' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1603133872878-685f586b6d1d?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name = 'Veg Fried Rice' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name = 'Chicken Fried Rice' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Meals%' OR name LIKE '%Thali%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name = 'Samosa' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Puff%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1612966608963-47da3147d41a?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name = 'Veg Noodles' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name = 'Chicken Noodles' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1525755662778-989d0524087e?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Manchuria%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Coffee%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Chai%' OR name LIKE '%Tea%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Soda%' OR name LIKE '%Drink%' LIMIT 1);
-UPDATE food_images SET image_url = 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=600&auto=format&fit=crop&q=80' WHERE food_item_id = (SELECT id FROM food_items WHERE name LIKE '%Lassi%' LIMIT 1);
+UPDATE food_images SET image_url = '/uploads/idli_sambar.png' WHERE food_item_id = 1;
+UPDATE food_images SET image_url = '/uploads/poori_curry.png' WHERE food_item_id = 2;
+UPDATE food_images SET image_url = '/uploads/upma.png' WHERE food_item_id = 3;
+UPDATE food_images SET image_url = '/uploads/veg_biryani.png' WHERE food_item_id = 4;
+UPDATE food_images SET image_url = '/uploads/chicken_biryani.png' WHERE food_item_id = 5;
+UPDATE food_images SET image_url = '/uploads/veg_fried_rice.png' WHERE food_item_id = 6;
+UPDATE food_images SET image_url = '/uploads/meals_thali.png' WHERE food_item_id = 7;
+UPDATE food_images SET image_url = '/uploads/samosa.png' WHERE food_item_id = 8;
+UPDATE food_images SET image_url = '/uploads/filter_coffee.png' WHERE food_item_id = 11;
+UPDATE food_images SET image_url = '/uploads/masala_chai.png' WHERE food_item_id = 12;
+UPDATE food_images SET image_url = '/uploads/fresh_lime_soda.png' WHERE food_item_id = 13;
+UPDATE food_images SET image_url = '/uploads/mango_lassi.png' WHERE food_item_id = 14;
+UPDATE food_images SET image_url = '/uploads/egg_puff.png' WHERE food_item_id = 15;
+UPDATE food_images SET image_url = '/uploads/veg_noodles.png' WHERE food_item_id = 16;
+UPDATE food_images SET image_url = '/uploads/chicken_manchuria.png' WHERE food_item_id = 17;
+UPDATE food_images SET image_url = '/uploads/chicken_fried_rice.png' WHERE food_item_id = 18;
+UPDATE food_images SET image_url = '/uploads/chicken_noodles.png' WHERE food_item_id = 19;
+UPDATE food_images SET image_url = '/uploads/veg_manchuria.png' WHERE food_item_id = 20;

@@ -44,7 +44,6 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 .m2-repository/
 
-# Local file uploads (keep only the placeholder image)
 backend/uploads/
-backend/src/main/resources/static/uploads/*
-!backend/src/main/resources/static/uploads/placeholder-default.png
+!backend/src/main/resources/static/uploads/*.png
+!backend/src/main/resources/static/uploads/.gitkeep
