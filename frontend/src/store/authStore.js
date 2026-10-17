@@ -80,6 +80,9 @@ const useAuthStore = create((set, get) => ({
     } catch (_) {
       /* ignore */
     }
+    try {
+      localStorage.removeItem('lbrce_auth_token');
+    } catch (_) {}
     set({ user: null, loading: false, error: null });
   },
 

@@ -20,9 +20,34 @@ const dispatchUnauthorized = () => {
   window.dispatchEvent(new CustomEvent('auth:unauthorized'));
 };
 
+// Request interceptor: attach X-Auth-Token and Authorization Bearer header if available
+api.interceptors.request.use((config) => {
+  try {
+    const token = localStorage.getItem('lbrce_auth_token');
+    if (token) {
+      config.headers['X-Auth-Token'] = token;
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+  } catch (_) {
+    /* ignore localStorage errors in private browsing */
+  }
+  return config;
+});
+
 // Response interceptor: unwrap standard ApiResponse envelope & handle automatic cold-start retry
 api.interceptors.response.use(
   (response) => {
+    try {
+      const headerToken = response.headers?.['x-auth-token'];
+      const bodyToken = response.data?.data?.token;
+      const token = headerToken || bodyToken;
+      if (token) {
+        localStorage.setItem('lbrce_auth_token', token);
+      }
+    } catch (_) {
+      /* ignore */
+    }
+
     const body = response.data;
     if (typeof body === 'string' && (body.trim().startsWith('<!') || body.trim().startsWith('<html'))) {
       const err = new Error('Backend server is waking up (cold start). Retrying...');

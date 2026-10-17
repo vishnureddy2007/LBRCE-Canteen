@@ -6,5 +6,10 @@ public record AuthResponse(
         String username,         // roll number / employee id / admin username
         String fullName,
         String email,
-        String role              // STUDENT | STAFF | ADMIN
-) {}
+        String role,             // STUDENT | STAFF | ADMIN
+        String token
+) {
+    public AuthResponse(Long id, String username, String fullName, String email, String role) {
+        this(id, username, fullName, email, role, null);
+    }
+}

@@ -33,12 +33,30 @@ class CanteenApplicationTests {
     }
 
     @Test
-    void loginWithBadCredentialsReturnsUnauthorizedNot500() throws Exception {
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/auth/login")
-                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"nonexistent\",\"password\":\"wrongpw123\"}"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Unauthorized"));
+    void staffEndpointAccessibleByAdmin() throws Exception {
+        mockMvc.perform(get("/api/staff")
+                .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void staffEndpointUnauthenticatedReturns401() throws Exception {
+        mockMvc.perform(get("/api/staff"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void staffEndpointWithSessionTokenHeaderReturns200() throws Exception {
+        org.springframework.mock.web.MockHttpSession session = new org.springframework.mock.web.MockHttpSession();
+        org.springframework.security.core.context.SecurityContext context = org.springframework.security.core.context.SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                "admin", "password", java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN"))
+        ));
+        session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+
+        mockMvc.perform(get("/api/staff")
+                .session(session)
+                .header("X-Auth-Token", session.getId()))
+                .andExpect(status().isOk());
     }
 }

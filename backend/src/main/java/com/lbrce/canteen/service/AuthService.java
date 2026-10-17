@@ -96,6 +96,7 @@ public class AuthService {
 
         HttpSession session = httpRequest.getSession(true);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+        String token = session.getId();
 
         if (auth.getPrincipal() instanceof LbrceUserDetails details) {
             return new AuthResponse(
@@ -103,11 +104,13 @@ public class AuthService {
                     details.getUsername(),
                     details.getFullName(),
                     details.getEmail(),
-                    details.getRole()
+                    details.getRole(),
+                    token
             );
         }
 
-        return resolveCurrentUser(auth.getName());
+        AuthResponse base = resolveCurrentUser(auth.getName());
+        return new AuthResponse(base.id(), base.username(), base.fullName(), base.email(), base.role(), token);
     }
 
     public AuthResponse resolveCurrentUser(String loginId) {

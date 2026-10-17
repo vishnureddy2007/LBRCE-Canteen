@@ -25,16 +25,26 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<AuthResponse>> signup(@Valid @RequestBody SignupRequest req,
-                                                            HttpServletRequest httpRequest) {
+                                                            HttpServletRequest httpRequest,
+                                                            jakarta.servlet.http.HttpServletResponse httpResponse) {
         // Sign-up and login are one transaction from the browser's point of
         // view: the response also establishes the server session.
-        return ResponseEntity.status(201).body(ApiResponse.ok(authService.signup(req, httpRequest), "Account created"));
+        AuthResponse res = authService.signup(req, httpRequest);
+        if (res.token() != null) {
+            httpResponse.setHeader("X-Auth-Token", res.token());
+        }
+        return ResponseEntity.status(201).body(ApiResponse.ok(res, "Account created"));
     }
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest req,
-                                          HttpServletRequest httpRequest) {
-        return ApiResponse.ok(authService.login(req, httpRequest), "Login successful");
+                                          HttpServletRequest httpRequest,
+                                          jakarta.servlet.http.HttpServletResponse httpResponse) {
+        AuthResponse res = authService.login(req, httpRequest);
+        if (res.token() != null) {
+            httpResponse.setHeader("X-Auth-Token", res.token());
+        }
+        return ApiResponse.ok(res, "Login successful");
     }
 
     @GetMapping("/me")

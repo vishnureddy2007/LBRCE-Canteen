@@ -99,7 +99,8 @@ public class SecurityConfig {
         cfg.setAllowCredentials(true);
 
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "X-Auth-Token"));
+        cfg.setExposedHeaders(List.of("Set-Cookie", "X-Auth-Token"));
         cfg.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -137,8 +138,8 @@ public class SecurityConfig {
                         "/uploads/**",
                         "/error"
                 ).permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/staff/**", "/api/orders/queue").hasAnyRole("STAFF", "ADMIN")
+                .requestMatchers("/api/admin", "/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/staff", "/api/staff/**", "/api/orders/queue").hasAnyRole("STAFF", "ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())
