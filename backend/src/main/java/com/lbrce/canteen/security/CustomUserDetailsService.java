@@ -45,26 +45,37 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        String cleanUsername = username == null ? "" : username.trim();
+
         // Students first (vast majority of canteen users), then staff, then admins.
-        Optional<Student> student = studentRepository.findByRollNumberOrEmail(username, username);
+        Optional<Student> student = studentRepository.findByRollNumberOrEmail(cleanUsername, cleanUsername);
+        if (student.isEmpty() && "student".equalsIgnoreCase(cleanUsername)) {
+            student = studentRepository.findByRollNumberOrEmail("20761A0501", "student@lbrce.edu");
+        }
         if (student.isPresent()) {
             Student s = student.get();
             return toUserDetails(s.getRollNumber(), s.getPasswordHash(), "STUDENT", s.getId(), s.getFullName(), s.getEmail());
         }
 
-        Optional<Staff> staff = staffRepository.findByEmployeeIdOrEmail(username, username);
+        Optional<Staff> staff = staffRepository.findByEmployeeIdOrEmail(cleanUsername, cleanUsername);
+        if (staff.isEmpty() && "staff".equalsIgnoreCase(cleanUsername)) {
+            staff = staffRepository.findByEmployeeIdOrEmail("EMP001", "staff@lbrce.edu");
+        }
         if (staff.isPresent()) {
             Staff s = staff.get();
             return toUserDetails(s.getEmployeeId(), s.getPasswordHash(), "STAFF", s.getId(), s.getFullName(), s.getEmail());
         }
 
-        Optional<Admin> admin = adminRepository.findByUsernameOrEmail(username, username);
+        Optional<Admin> admin = adminRepository.findByUsernameOrEmail(cleanUsername, cleanUsername);
+        if (admin.isEmpty() && "admin".equalsIgnoreCase(cleanUsername)) {
+            admin = adminRepository.findByUsernameOrEmail("admin@lbrce.edu", "admin@lbrce.edu");
+        }
         if (admin.isPresent()) {
             Admin a = admin.get();
             return toUserDetails(a.getUsername(), a.getPasswordHash(), "ADMIN", a.getId(), a.getFullName(), a.getEmail());
         }
 
-        throw new UsernameNotFoundException("User not found: " + username);
+        throw new UsernameNotFoundException("User not found: " + cleanUsername);
     }
 
     private static UserDetails toUserDetails(String loginId, String passwordHash, String role, Long userId, String fullName, String email) {

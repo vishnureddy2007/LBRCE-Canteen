@@ -111,17 +111,27 @@ public class AuthService {
     }
 
     public AuthResponse resolveCurrentUser(String loginId) {
-        Optional<Admin> a = adminRepository.findByUsernameOrEmail(loginId, loginId);
+        String clean = loginId == null ? "" : loginId.trim();
+        Optional<Admin> a = adminRepository.findByUsernameOrEmail(clean, clean);
+        if (a.isEmpty() && "admin".equalsIgnoreCase(clean)) {
+            a = adminRepository.findByUsernameOrEmail("admin@lbrce.edu", "admin@lbrce.edu");
+        }
         if (a.isPresent()) {
             Admin admin = a.get();
             return new AuthResponse(admin.getId(), admin.getUsername(), admin.getFullName(), admin.getEmail(), "ADMIN");
         }
-        Optional<Staff> s = staffRepository.findByEmployeeIdOrEmail(loginId, loginId);
+        Optional<Staff> s = staffRepository.findByEmployeeIdOrEmail(clean, clean);
+        if (s.isEmpty() && "staff".equalsIgnoreCase(clean)) {
+            s = staffRepository.findByEmployeeIdOrEmail("EMP001", "staff@lbrce.edu");
+        }
         if (s.isPresent()) {
             Staff st = s.get();
             return new AuthResponse(st.getId(), st.getEmployeeId(), st.getFullName(), st.getEmail(), "STAFF");
         }
-        Optional<Student> st = studentRepository.findByRollNumberOrEmail(loginId, loginId);
+        Optional<Student> st = studentRepository.findByRollNumberOrEmail(clean, clean);
+        if (st.isEmpty() && "student".equalsIgnoreCase(clean)) {
+            st = studentRepository.findByRollNumberOrEmail("20761A0501", "student@lbrce.edu");
+        }
         if (st.isPresent()) {
             Student student = st.get();
             return new AuthResponse(student.getId(), student.getRollNumber(), student.getFullName(), student.getEmail(), "STUDENT");
