@@ -84,17 +84,19 @@ public class SecurityConfig {
 
         if (!origins.isEmpty()) {
             cfg.setAllowedOrigins(origins);
-            cfg.setAllowCredentials(true);
         } else {
             cfg.setAllowedOriginPatterns(List.of(
                 "http://localhost:[*]",
                 "http://127.0.0.1:[*]",
                 "http://192.168.*:[*]",
                 "http://10.*:[*]",
-                "http://172.*:[*]"
+                "http://172.*:[*]",
+                "https://*.onrender.com",
+                "https://*.vercel.app",
+                "https://*.netlify.app"
             ));
-            cfg.setAllowCredentials(true);
         }
+        cfg.setAllowCredentials(true);
 
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));

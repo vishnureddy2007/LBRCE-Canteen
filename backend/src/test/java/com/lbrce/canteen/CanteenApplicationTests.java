@@ -31,4 +31,14 @@ class CanteenApplicationTests {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.status").value("UP"));
     }
+
+    @Test
+    void loginWithBadCredentialsReturnsUnauthorizedNot500() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/auth/login")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content("{\"username\":\"nonexistent\",\"password\":\"wrongpw123\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Unauthorized"));
+    }
 }

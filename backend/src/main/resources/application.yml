@@ -44,7 +44,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:validate}
-    open-in-view: false
+    open-in-view: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect

@@ -89,8 +89,10 @@ public class AuthService {
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
 
-        // Regenerate session ID to protect against session fixation
-        httpRequest.changeSessionId();
+        // Regenerate session ID to protect against session fixation if session exists
+        if (httpRequest.getSession(false) != null) {
+            httpRequest.changeSessionId();
+        }
 
         HttpSession session = httpRequest.getSession(true);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);

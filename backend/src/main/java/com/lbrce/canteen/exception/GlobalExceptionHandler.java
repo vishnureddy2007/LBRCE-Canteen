@@ -123,7 +123,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> all(Exception e, HttpServletRequest req) {
         log.error("Unhandled exception on {} {}", req.getMethod(), req.getRequestURI(), e);
+        String msg = (e.getMessage() != null && !e.getMessage().isBlank())
+                ? e.getMessage()
+                : "Internal server error";
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("Internal server error"));
+                .body(ApiResponse.error(msg));
     }
 }
