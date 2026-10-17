@@ -35,7 +35,7 @@ import java.util.Optional;
  * so this runner is idempotent across restarts.
  */
 @Component
-@Profile({"dev", "h2"})
+@Profile("dev")
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
