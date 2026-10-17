@@ -14,13 +14,19 @@ export default function OrderQueue() {
   const [busy, setBusy] = useState(false);
   const [activeTab, setActiveTab] = useState('PLACED');
 
-  const load = () => {
-    setLoading(true);
+  const load = (silent = false) => {
+    if (!silent) setLoading(true);
     api.get('/orders/queue')
        .then((rows) => setOrders(Array.isArray(rows) ? rows : []))
-       .finally(() => setLoading(false));
+       .catch((e) => { if (!silent) toast.error(e.message || 'Failed to load order queue'); })
+       .finally(() => { if (!silent) setLoading(false); });
   };
-  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    load();
+    const interval = setInterval(() => load(true), 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   const callApi = async (fn, okMsg) => {
     setBusy(true);

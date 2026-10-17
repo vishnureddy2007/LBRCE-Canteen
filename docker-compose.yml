@@ -1,0 +1,94 @@
+services:
+  # ---------------------------------------------------------------------------
+  # 1. MySQL Database Service (Pre-seeded with schema, menu items, and test users)
+  # ---------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: lbrce-canteen-db
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lbrce_canteen
+      MYSQL_USER: canteen_user
+      MYSQL_PASSWORD: canteen_pass
+    ports:
+      # Exposes database to localhost & external network/tools (DBeaver, MySQL Workbench, CLI)
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed_data.sql:/docker-entrypoint-initdb.d/02-seed_data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -prootpassword || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - lbrce-network
+
+  # ---------------------------------------------------------------------------
+  # 2. LBRCE Full-Stack Application (Embedded React SPA inside Spring Boot 3)
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lbrce-canteen-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/lbrce_canteen?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=10000&socketTimeout=30000
+      SPRING_DATASOURCE_USERNAME: canteen_user
+      SPRING_DATASOURCE_PASSWORD: canteen_pass
+      JPA_DDL_AUTO: update
+      COOKIE_SECURE: "false"
+      COOKIE_SAME_SITE: lax
+      BOOTSTRAP_ADMIN_USERNAME: admin
+      BOOTSTRAP_ADMIN_EMAIL: admin@lbrce.ac.in
+      BOOTSTRAP_ADMIN_PASSWORD: Admin@12345678
+      BOOTSTRAP_ADMIN_FULL_NAME: Canteen Administrator
+      APP_CORS_ALLOWED_ORIGINS: ""
+    ports:
+      # Main Web Application (Frontend + Backend API)
+      - "8080:8080"
+    volumes:
+      - app_uploads:/app/uploads
+    networks:
+      - lbrce-network
+
+  # ---------------------------------------------------------------------------
+  # 3. phpMyAdmin (Web-based Database GUI for instant visual database access)
+  # ---------------------------------------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: lbrce-canteen-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+      UPLOAD_LIMIT: 64M
+    ports:
+      # Visual Database Management GUI
+      - "8081:80"
+    networks:
+      - lbrce-network
+
+volumes:
+  db_data:
+    driver: local
+  app_uploads:
+    driver: local
+
+networks:
+  lbrce-network:
+    driver: bridge

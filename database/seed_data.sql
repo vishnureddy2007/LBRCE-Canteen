@@ -1,13 +1,28 @@
 -- =====================================================================
 -- LBRCE Canteen Management System
 -- Seed Data
---
--- This file intentionally does not create an administrator with a known
--- password. The first production administrator is created from the private
--- BOOTSTRAP_ADMIN_* deployment variables.
 -- =====================================================================
 
 USE lbrce_canteen;
+
+-- ---------------------------------------------------------------------
+-- Demo Users (for development, external testing and evaluation)
+-- Passwords:
+--   Admin:   username 'admin'    / password 'Admin@12345678'
+--   Staff:   empId    'STAFF001' / password 'Staff@12345678'
+--   Student: roll     '20LBR001' / password 'Student@12345678'
+-- ---------------------------------------------------------------------
+INSERT INTO admins (username, email, password_hash, full_name, phone, role)
+VALUES ('admin', 'admin@lbrce.ac.in', '$2a$10$sxkkLrq7sIIhE7c7znkKcenZN5QRijkCC0tbB1ps9a.pMLtl9VxH2', 'Canteen Administrator', '9876543210', 'ADMIN')
+ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
+
+INSERT INTO staff (employee_id, email, password_hash, full_name, phone, shift)
+VALUES ('STAFF001', 'staff@lbrce.ac.in', '$2a$10$hdr7cyAtk/1cb3bA0dKOC.LT2XYs6mk/C.Ftmke8x01GLNSsTER4y', 'Ramesh Kumar', '9876543211', 'MORNING')
+ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
+
+INSERT INTO students (roll_number, email, password_hash, full_name, phone, department, year_of_study)
+VALUES ('20LBR001', 'student@lbrce.ac.in', '$2a$10$/biN6Zh4Q.kpwKyct9tsmuSXMNBPaZsAR7bVxw0a3PZ2IohJGucpG', 'Suresh Reddy', '9876543212', 'IT', 3)
+ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
 
 -- ---------------------------------------------------------------------
 -- Categories

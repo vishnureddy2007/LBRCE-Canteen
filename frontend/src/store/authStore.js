@@ -20,7 +20,7 @@ const useAuthStore = create((set, get) => ({
 
     inFlightFetchMePromise = (async () => {
       try {
-        const me = await api.get('/auth/me', { timeout: 7000 });
+        const me = await api.get('/auth/me', { timeout: 20000 });
         set({ user: me, loading: false, initialized: true, error: null });
         return me;
       } catch (e) {
@@ -75,7 +75,11 @@ const useAuthStore = create((set, get) => ({
   },
 
   logout: async () => {
-    try { await api.post('/auth/logout'); } catch (_) { /* ignore */ }
+    try {
+      await api.post('/auth/logout');
+    } catch (_) {
+      /* ignore */
+    }
     set({ user: null, loading: false, error: null });
   },
 

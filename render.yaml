@@ -23,6 +23,8 @@ services:
         sync: false
       - key: BOOTSTRAP_ADMIN_FULL_NAME
         value: Canteen Administrator
+      - key: CLOUDINARY_URL
+        sync: false
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
@@ -32,6 +34,6 @@ services:
       - key: COOKIE_SECURE
         value: "true"
       - key: COOKIE_SAME_SITE
-        value: "none"
+        value: "lax"
       - key: JPA_DDL_AUTO
-        value: "update"
+        value: "validate"

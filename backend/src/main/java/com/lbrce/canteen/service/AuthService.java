@@ -18,18 +18,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 /**
- * Authentication and signup.
+ * Authentication and signup service.
  *
- * <p>Login uses Spring Security's {@link AuthenticationManager} but is exposed
- * as a JSON endpoint so the SPA doesn't need to post form data. We also bind
- * the {@code Authentication} to the {@link HttpSession} so subsequent calls
- * are authenticated.</p>
+ * <p>Login uses Spring Security's {@link AuthenticationManager} and binds
+ * the {@code Authentication} to the {@link HttpSession} using
+ * {@code HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY}
+ * so subsequent calls remain authenticated across all devices.</p>
  */
 @Service
 public class AuthService {
@@ -65,33 +66,34 @@ public class AuthService {
             throw new ConflictException("Email already registered");
         }
         Student s = new Student();
-        s.setRollNumber(req.rollNumber());
-        s.setEmail(req.email());
+        s.setRollNumber(req.rollNumber().trim());
+        s.setEmail(req.email().trim().toLowerCase());
         s.setPasswordHash(passwordEncoder.encode(req.password()));
-        s.setFullName(req.fullName());
-        s.setPhone(req.phone());
-        s.setDepartment(req.department());
+        s.setFullName(req.fullName() != null ? req.fullName().trim() : "");
+        s.setPhone(req.phone() != null ? req.phone().trim() : null);
+        s.setDepartment(req.department() != null ? req.department().trim() : null);
         s.setYearOfStudy(req.yearOfStudy());
         studentRepository.saveAndFlush(s);
 
-        // A successful sign-up must establish the same server-side session as
-        // a login. Previously the SPA treated the response as authenticated,
-        // but a page refresh immediately lost that client-only state.
+        // A successful sign-up establishes the same server-side session as login.
         return login(new LoginRequest(s.getRollNumber(), req.password()), httpRequest);
     }
 
     public AuthResponse login(LoginRequest req, HttpServletRequest httpRequest) {
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.username(), req.password())
+                new UsernamePasswordAuthenticationToken(req.username().trim(), req.password())
         );
 
-        // Bind to session so subsequent requests carry the auth.
+        // Bind to session so subsequent requests carry the auth
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
 
+        // Regenerate session ID to protect against session fixation
+        httpRequest.changeSessionId();
+
         HttpSession session = httpRequest.getSession(true);
-        session.setAttribute("SPRING_SECURITY_CONTEXT", context);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
         if (auth.getPrincipal() instanceof LbrceUserDetails details) {
             return new AuthResponse(

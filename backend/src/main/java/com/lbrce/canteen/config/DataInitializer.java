@@ -6,11 +6,15 @@ import com.lbrce.canteen.entity.Category;
 import com.lbrce.canteen.entity.FoodImage;
 import com.lbrce.canteen.entity.FoodItem;
 import com.lbrce.canteen.entity.Offer;
+import com.lbrce.canteen.entity.Staff;
+import com.lbrce.canteen.entity.Student;
 import com.lbrce.canteen.repository.AdminRepository;
 import com.lbrce.canteen.repository.AnnouncementRepository;
 import com.lbrce.canteen.repository.CategoryRepository;
 import com.lbrce.canteen.repository.FoodItemRepository;
 import com.lbrce.canteen.repository.OfferRepository;
+import com.lbrce.canteen.repository.StaffRepository;
+import com.lbrce.canteen.repository.StudentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -26,21 +30,19 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Seeds the database with a default admin and a small but realistic demo
- * dataset on first boot. Every operation is guarded by an existence check so
- * this runner is idempotent across restarts.
- *
- * <p>The data mirrors the contents of {@code database/seed_data.sql} so the
- * app boots to a usable state without any external SQL load step. The SQL
- * file is still useful as documentation and for non-Spring tooling.</p>
+ * Seeds the database with demo accounts (admin, staff, student) and a realistic
+ * demo dataset on first boot. Every operation is guarded by an existence check
+ * so this runner is idempotent across restarts.
  */
 @Component
-@Profile("dev")
+@Profile({"dev", "h2"})
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
     private final AdminRepository adminRepository;
+    private final StaffRepository staffRepository;
+    private final StudentRepository studentRepository;
     private final CategoryRepository categoryRepository;
     private final FoodItemRepository foodItemRepository;
     private final OfferRepository offerRepository;
@@ -50,16 +52,20 @@ public class DataInitializer implements CommandLineRunner {
     @Value("${APP_DEV_SEED_ADMIN_USERNAME:admin}")
     private String seedAdminUsername;
 
-    @Value("${APP_DEV_SEED_ADMIN_PASSWORD:}")
+    @Value("${APP_DEV_SEED_ADMIN_PASSWORD:Admin@12345678}")
     private String seedAdminPassword;
 
     public DataInitializer(AdminRepository adminRepository,
+                           StaffRepository staffRepository,
+                           StudentRepository studentRepository,
                            CategoryRepository categoryRepository,
                            FoodItemRepository foodItemRepository,
                            OfferRepository offerRepository,
                            AnnouncementRepository announcementRepository,
                            PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
+        this.staffRepository = staffRepository;
+        this.studentRepository = studentRepository;
         this.categoryRepository = categoryRepository;
         this.foodItemRepository = foodItemRepository;
         this.offerRepository = offerRepository;
@@ -69,15 +75,44 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (seedAdminPassword.isBlank()) {
-            log.warn("Demo data was not seeded: set APP_DEV_SEED_ADMIN_PASSWORD when using the dev profile");
-            return;
-        }
         Admin admin = seedAdmin();
+        seedStaff();
+        seedStudent();
         List<Category> categories = seedCategories();
         seedFood(categories);
         seedOffers();
         seedAnnouncements(admin);
+    }
+
+    private void seedStaff() {
+        if (staffRepository.existsByEmployeeId("STAFF001")) {
+            return;
+        }
+        Staff s = new Staff();
+        s.setEmployeeId("STAFF001");
+        s.setEmail("staff@lbrce.ac.in");
+        s.setPasswordHash(passwordEncoder.encode("Staff@12345678"));
+        s.setFullName("Ramesh Kumar");
+        s.setPhone("9876543211");
+        s.setShift("MORNING");
+        staffRepository.save(s);
+        log.info("Seeded demo staff account: STAFF001 / Staff@12345678");
+    }
+
+    private void seedStudent() {
+        if (studentRepository.existsByRollNumber("20LBR001")) {
+            return;
+        }
+        Student st = new Student();
+        st.setRollNumber("20LBR001");
+        st.setEmail("student@lbrce.ac.in");
+        st.setPasswordHash(passwordEncoder.encode("Student@12345678"));
+        st.setFullName("Suresh Reddy");
+        st.setPhone("9876543212");
+        st.setDepartment("IT");
+        st.setYearOfStudy(3);
+        studentRepository.save(st);
+        log.info("Seeded demo student account: 20LBR001 / Student@12345678");
     }
 
     private Admin seedAdmin() {

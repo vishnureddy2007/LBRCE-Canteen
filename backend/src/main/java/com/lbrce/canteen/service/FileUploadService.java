@@ -17,7 +17,7 @@ import java.util.UUID;
 
 /**
  * Handles food image uploads. Supports uploading to Cloudinary (for stateless cloud scaling)
- * and falls back to local folder storage for easy local development.
+ * and falls back to local folder storage for local development.
  */
 @Service
 public class FileUploadService {
@@ -28,8 +28,11 @@ public class FileUploadService {
     );
     private static final long MAX_BYTES = 5L * 1024 * 1024;
 
-    @Value("${app.upload.dir:src/main/resources/static/uploads}")
+    @Value("${app.upload.dir:uploads}")
     private String uploadDir;
+
+    @Value("${cloudinary.url:}")
+    private String cloudinaryUrl;
 
     @Value("${cloudinary.cloud-name:}")
     private String cloudinaryCloudName;
@@ -44,16 +47,21 @@ public class FileUploadService {
 
     @PostConstruct
     public void init() {
-        if (cloudinaryCloudName != null && !cloudinaryCloudName.trim().isEmpty()) {
+        if (cloudinaryUrl != null && !cloudinaryUrl.isBlank()) {
+            cloudinary = new com.cloudinary.Cloudinary(cloudinaryUrl.trim());
+            log.info("Initialized Cloudinary from CLOUDINARY_URL for cloud file uploads.");
+        } else if (cloudinaryCloudName != null && !cloudinaryCloudName.isBlank()
+                && cloudinaryApiKey != null && !cloudinaryApiKey.isBlank()
+                && cloudinaryApiSecret != null && !cloudinaryApiSecret.isBlank()) {
             cloudinary = new com.cloudinary.Cloudinary(com.cloudinary.utils.ObjectUtils.asMap(
                 "cloud_name", cloudinaryCloudName.trim(),
                 "api_key", cloudinaryApiKey.trim(),
                 "api_secret", cloudinaryApiSecret.trim(),
                 "secure", true
             ));
-            log.info("Initialized Cloudinary for production/cloud file uploads.");
+            log.info("Initialized Cloudinary from credentials for cloud file uploads.");
         } else {
-            log.info("No Cloudinary credentials found. Files will be saved locally to: {}", uploadDir);
+            log.warn("Cloudinary is not configured. Uploads will be saved locally to: {}. For production persistence across container restarts, set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET (or CLOUDINARY_URL).", uploadDir);
         }
     }
 
@@ -86,7 +94,9 @@ public class FileUploadService {
             String name = UUID.randomUUID().toString().replace("-", "") + "." + ext;
 
             Path target = Paths.get(uploadDir, name);
-            Files.createDirectories(target.getParent());
+            if (target.getParent() != null) {
+                Files.createDirectories(target.getParent());
+            }
             try (var in = file.getInputStream()) {
                 Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
             }

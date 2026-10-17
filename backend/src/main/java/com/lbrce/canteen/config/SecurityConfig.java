@@ -15,8 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -26,16 +24,15 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Spring Security configuration for the LBRCE Canteen API.
+ * Spring Security configuration for the LBRCE Canteen Application.
  *
  * <ul>
  *   <li>Form login backed by {@link CustomUserDetailsService} (students log in with roll number,
  *       staff with employee id, admins with username/email).</li>
- *   <li>Session cookie (IF_REQUIRED) so the SPA can stay logged in across requests.</li>
- *   <li>CSRF disabled — the SPA uses SameSite=Lax cookies on a same-origin dev setup; an
- *       attacker site cannot replay a POST with a session cookie.</li>
+ *   <li>Session cookie (IF_REQUIRED) so the SPA stays logged in across requests.</li>
+ *   <li>Restricted CORS configuration preventing wildcard credentialed access.</li>
  *   <li>Method-level security via {@code @PreAuthorize} on controllers.</li>
- *   <li>CORS allowed for the Vite dev server ({@code http://localhost:5173}).</li>
+ *   <li>Permits SPA static assets and public API endpoints.</li>
  * </ul>
  */
 @Configuration
@@ -44,8 +41,14 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
 
-    @Value("${app.cors.allowed-origins:http://localhost:5173}")
+    @Value("${app.cors.allowed-origins:}")
     private String allowedOrigins;
+
+    @Value("${server.servlet.session.cookie.same-site:lax}")
+    private String cookieSameSite;
+
+    @Value("${server.servlet.session.cookie.secure:true}")
+    private String cookieSecure;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -53,7 +56,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Strength 10 is a good balance of CPU cost vs. brute-force resistance.
         return new BCryptPasswordEncoder(10);
     }
 
@@ -73,20 +75,29 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
+        
+        // Filter out wildcard * to strictly prevent wildcard credentialed CORS
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
-                .filter(origin -> !origin.isEmpty())
+                .filter(origin -> !origin.isEmpty() && !origin.equals("*"))
                 .toList();
 
-        if (origins.contains("*")) {
-            cfg.setAllowedOriginPatterns(List.of("*"));
-        } else {
+        if (!origins.isEmpty()) {
             cfg.setAllowedOrigins(origins);
-            cfg.setAllowedOriginPatterns(List.of("https://*.vercel.app", "http://localhost:*", "http://127.0.0.1:*"));
+            cfg.setAllowCredentials(true);
+        } else {
+            cfg.setAllowedOriginPatterns(List.of(
+                "http://localhost:[*]",
+                "http://127.0.0.1:[*]",
+                "http://192.168.*:[*]",
+                "http://10.*:[*]",
+                "http://172.*:[*]"
+            ));
+            cfg.setAllowCredentials(true);
         }
+
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        cfg.setAllowedHeaders(List.of("*"));
-        cfg.setAllowCredentials(true);
+        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         cfg.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -97,7 +108,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // CSRF disabled — see class javadoc
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
@@ -107,6 +117,15 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
+                        "/",
+                        "/index.html",
+                        "/assets/**",
+                        "/favicon.ico",
+                        "/login",
+                        "/signup",
+                        "/student/**",
+                        "/staff/**",
+                        "/admin/**",
                         "/api/auth/**",
                         "/api/health",
                         "/api/foods",
@@ -132,11 +151,16 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                     .logoutUrl("/api/auth/logout")
+                    .deleteCookies("LBRCESESSION")
                     .logoutSuccessHandler((request, response, authentication) -> {
                         response.setStatus(HttpStatus.OK.value());
                         response.setContentType("application/json");
-                        String sameSite = request.isSecure() ? "SameSite=None; Secure" : "SameSite=Lax";
-                        response.setHeader("Set-Cookie", "LBRCESESSION=; Path=/; Max-Age=0; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly; " + sameSite);
+                        String sameSite = "none".equalsIgnoreCase(cookieSameSite) ? "None" : "Lax";
+                        boolean isSecure = "true".equalsIgnoreCase(cookieSecure)
+                                || request.isSecure()
+                                || "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"));
+                        String secureFlag = isSecure ? "; Secure" : "";
+                        response.setHeader("Set-Cookie", "LBRCESESSION=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=" + sameSite + secureFlag);
                         response.getWriter().write("{\"success\":true,\"message\":\"Logged out\"}");
                     })
                     .invalidateHttpSession(true)
@@ -145,8 +169,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    // Reference to keep CookieCsrfTokenRepository import in case CSRF is re-enabled later.
-    @SuppressWarnings("unused")
-    private static final Class<?> CSRF_TOKEN_REPO = CookieCsrfTokenRepository.class;
 }

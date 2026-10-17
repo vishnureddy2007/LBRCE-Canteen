@@ -23,6 +23,28 @@ For exact single-service, MySQL, and optional Cloudinary configuration, see
 
 ---
 
+## ⚡ Quick Start for External Evaluators & Developers
+
+Run the complete full-stack system and pre-seeded database in one command:
+
+```bash
+# Windows: Double-click or run:
+start-docker.bat
+
+# Linux / macOS:
+./start-docker.sh
+```
+
+| Component | URL / Connection | Credentials |
+|---|---|---|
+| **Web Application** | [http://localhost:8080](http://localhost:8080) | Admin: `admin` / `Admin@12345678`<br>Staff: `STAFF001` / `Staff@12345678`<br>Student: `20LBR001` / `Student@12345678` |
+| **Visual DB Management (phpMyAdmin)** | [http://localhost:8081](http://localhost:8081) | Pre-logged in *(or root / rootpassword)* |
+| **Direct MySQL Connection** | `localhost:3306` | DB: `lbrce_canteen`, User: `canteen_user`, Pass: `canteen_pass` |
+
+👉 *For H2 in-memory zero-install mode, local native runs, cloud database setup, or sharing over Wi-Fi/Internet, see [EXTERNAL_ACCESS_GUIDE.md](EXTERNAL_ACCESS_GUIDE.md).*
+
+---
+
 ## 📌 Features
 
 ### 👨‍🎓 Student
@@ -157,52 +179,64 @@ mysql -u root -p lbrce_canteen < database/seed_data.sql
 ```
 
 ### 2. Backend Setup
-1. Configure your local database properties in `backend/src/main/resources/application.yml` under `spring.datasource`:
-   ```yaml
-   spring:
-     datasource:
-       url: jdbc:mysql://localhost:3306/lbrce_canteen?useSSL=false&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
-       username: YOUR_DB_USERNAME
-       password: YOUR_DB_PASSWORD
-   ```
-2. Navigate to the backend directory and run:
+1. Configure environment variables or use the `dev` profile for local testing:
    ```bash
-   cd backend
-   # Build the project
-   mvn clean install
-   # Run the application
+   # Option A: Run with local MySQL using the dev profile
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev
+
+   # Option B: Run with environment variables pointing to your database
+   export SPRING_DATASOURCE_URL="jdbc:mysql://localhost:3306/lbrce_canteen?useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=10000&socketTimeout=30000"
+   export SPRING_DATASOURCE_USERNAME="YOUR_DB_USERNAME"
+   export SPRING_DATASOURCE_PASSWORD="YOUR_DB_PASSWORD"
    mvn spring-boot:run
    ```
    The backend runs at `http://localhost:8080`.
 
 ### 3. Frontend Setup
-1. Create a `.env` file in the `frontend` directory:
-   ```env
-   VITE_API_BASE_URL=/api
-   ```
-2. Install dependencies and start the Vite dev server:
+1. In the `frontend` directory:
    ```bash
    cd frontend
    npm install
    npm run dev
    ```
-   The frontend runs at `http://localhost:5173`.
+   The frontend runs at `http://localhost:5173`. In development, Vite proxies `/api` and `/uploads` to `http://localhost:8080`.
+
+### 4. Single-Container Production Build (Docker)
+Build and run the entire unified app (frontend + backend) in one container:
+```bash
+docker build -t lbrce-canteen .
+docker run -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL="jdbc:mysql://<HOST>:<PORT>/lbrce_canteen?useSSL=true&requireSSL=true&sslMode=REQUIRED" \
+  -e SPRING_DATASOURCE_USERNAME="<DB_USER>" \
+  -e SPRING_DATASOURCE_PASSWORD="<DB_PASS>" \
+  -e JPA_DDL_AUTO="validate" \
+  -e BOOTSTRAP_ADMIN_USERNAME="admin" \
+  -e BOOTSTRAP_ADMIN_EMAIL="admin@lbrce.ac.in" \
+  -e BOOTSTRAP_ADMIN_PASSWORD="<STRONG_PASSWORD_12_CHARS>" \
+  lbrce-canteen
+```
 
 ---
 
 ## 🛠️ Environment Variables Reference
 
-### Frontend (`frontend/.env`)
-```env
-# In development, the Vite dev server proxies requests automatically
-VITE_API_BASE_URL=/api
-```
-
-### Backend (`backend/src/main/resources/application.yml` or OS environment variables)
-- `SPRING_DATASOURCE_URL`: JDBC Database URL
-- `SPRING_DATASOURCE_USERNAME`: Database username
-- `SPRING_DATASOURCE_PASSWORD`: Database password
-- `PORT`: Port for the backend application (default: `8080`)
+| Variable | Description | Default / Example |
+|---|---|---|
+| `PORT` | Application server port | `8080` |
+| `SPRING_DATASOURCE_URL` | JDBC Database URL (with SSL parameters in prod) | `jdbc:mysql://HOST:PORT/DB?useSSL=true...` |
+| `SPRING_DATASOURCE_USERNAME` | Database username | `lbrce_user` |
+| `SPRING_DATASOURCE_PASSWORD` | Database password | *(Secret)* |
+| `JPA_DDL_AUTO` | Hibernate schema validation mode | `validate` |
+| `COOKIE_SECURE` | Enforce HTTPS Secure flag on session cookies | `true` |
+| `COOKIE_SAME_SITE` | Cookie SameSite attribute (`lax` / `none`) | `lax` |
+| `BOOTSTRAP_ADMIN_USERNAME` | First admin account username | `admin` |
+| `BOOTSTRAP_ADMIN_EMAIL` | First admin account email | `admin@lbrce.ac.in` |
+| `BOOTSTRAP_ADMIN_PASSWORD` | First admin account password (12+ chars) | *(Secret)* |
+| `CLOUDINARY_URL` | Cloudinary URL for stateless image uploads | `cloudinary://...` |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | `lbrce-canteen` |
+| `CLOUDINARY_API_KEY` | Cloudinary API key | `123456789012345` |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret | *(Secret)* |
+| `APP_CORS_ALLOWED_ORIGINS` | Permitted external origins (leave empty for same origin) | *(Empty)* |
 
 ---
 
