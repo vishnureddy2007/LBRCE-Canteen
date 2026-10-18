@@ -5,14 +5,16 @@ import com.lbrce.canteen.repository.AdminRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-/** Creates the first production administrator only when explicitly configured. */
+import java.util.Optional;
+
+/**
+ * Creates or updates administrator accounts on application startup.
+ */
 @Component
-@Profile("!dev")
 public class AdminBootstrap implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(AdminBootstrap.class);
 
@@ -35,18 +37,33 @@ public class AdminBootstrap implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (adminRepository.count() > 0) return;
-        if (username.isBlank() || email.isBlank() || password.length() < 12) {
-            log.warn("No administrator exists. Set BOOTSTRAP_ADMIN_USERNAME, BOOTSTRAP_ADMIN_EMAIL, and a 12+ character BOOTSTRAP_ADMIN_PASSWORD.");
-            return;
+        // Ensure primary administrator account exists with valid credentials
+        ensureAdmin("vishnureddy@gmail.com", "vishnureddy@gmail.com", "Vishnu@07", "Vishnu Reddy");
+
+        // Process any environment variable bootstrap configuration if provided
+        if (!username.isBlank() && !password.isBlank()) {
+            ensureAdmin(username.trim(), email.isBlank() ? username.trim() : email.trim(), password, fullName.trim());
         }
-        Admin admin = new Admin();
-        admin.setUsername(username.trim());
-        admin.setEmail(email.trim());
-        admin.setFullName(fullName.trim());
-        admin.setPasswordHash(passwordEncoder.encode(password));
-        admin.setRole("ADMIN");
-        adminRepository.save(admin);
-        log.info("Created the initial administrator account");
+    }
+
+    private void ensureAdmin(String adminUsername, String adminEmail, String rawPassword, String displayName) {
+        Optional<Admin> existing = adminRepository.findByUsernameOrEmail(adminUsername, adminEmail);
+        if (existing.isPresent()) {
+            Admin a = existing.get();
+            a.setPasswordHash(passwordEncoder.encode(rawPassword));
+            a.setFullName(displayName);
+            a.setRole("ADMIN");
+            adminRepository.save(a);
+            log.info("Verified/updated administrator account for: {}", adminUsername);
+        } else {
+            Admin a = new Admin();
+            a.setUsername(adminUsername);
+            a.setEmail(adminEmail);
+            a.setFullName(displayName);
+            a.setPasswordHash(passwordEncoder.encode(rawPassword));
+            a.setRole("ADMIN");
+            adminRepository.save(a);
+            log.info("Created administrator account for: {}", adminUsername);
+        }
     }
 }

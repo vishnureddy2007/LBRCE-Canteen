@@ -73,6 +73,18 @@ class CanteenApplicationTests {
     }
 
     @Test
+    @DisplayName("Admin bootstrap creates vishnureddy@gmail.com and verifies login")
+    void vishnuReddyAdminLogin() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\":\"vishnureddy@gmail.com\",\"password\":\"Vishnu@07\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.username").value("vishnureddy@gmail.com"))
+                .andExpect(jsonPath("$.data.role").value("ADMIN"));
+    }
+
+    @Test
     @DisplayName("Health endpoint is public and responds UP")
     void healthEndpointIsPublicAndUp() throws Exception {
         mockMvc.perform(get("/api/health"))

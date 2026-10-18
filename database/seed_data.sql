@@ -16,6 +16,10 @@ INSERT INTO admins (username, email, password_hash, full_name, phone, role)
 VALUES ('admin', 'admin@lbrce.ac.in', '$2a$10$sxkkLrq7sIIhE7c7znkKcenZN5QRijkCC0tbB1ps9a.pMLtl9VxH2', 'Canteen Administrator', '9876543210', 'ADMIN')
 ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
 
+INSERT INTO admins (username, email, password_hash, full_name, phone, role)
+VALUES ('vishnureddy@gmail.com', 'vishnureddy@gmail.com', '$2a$10$E/jiqkcwdzJRwAV92TlI/.AF4ZTXna/lp9shC9654RDl5p1VijpW2', 'Vishnu Reddy', '9876543210', 'ADMIN')
+ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), full_name = VALUES(full_name);
+
 INSERT INTO staff (employee_id, email, password_hash, full_name, phone, shift)
 VALUES ('STAFF001', 'staff@lbrce.ac.in', '$2a$10$hdr7cyAtk/1cb3bA0dKOC.LT2XYs6mk/C.Ftmke8x01GLNSsTER4y', 'Ramesh Kumar', '9876543211', 'MORNING')
 ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
