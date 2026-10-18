@@ -40,17 +40,20 @@ public class AuthService {
     private final StaffRepository staffRepository;
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.lbrce.canteen.security.TokenService tokenService;
 
     public AuthService(AuthenticationManager authenticationManager,
                        StudentRepository studentRepository,
                        StaffRepository staffRepository,
                        AdminRepository adminRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       com.lbrce.canteen.security.TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.studentRepository = studentRepository;
         this.staffRepository = staffRepository;
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
     }
 
     @Transactional
@@ -96,21 +99,33 @@ public class AuthService {
 
         HttpSession session = httpRequest.getSession(true);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-        String token = session.getId();
+        String sessionId = session.getId();
+
+        Long userId;
+        String username;
+        String fullName;
+        String email;
+        String role;
 
         if (auth.getPrincipal() instanceof LbrceUserDetails details) {
-            return new AuthResponse(
-                    details.getUserId(),
-                    details.getUsername(),
-                    details.getFullName(),
-                    details.getEmail(),
-                    details.getRole(),
-                    token
-            );
+            userId = details.getUserId();
+            username = details.getUsername();
+            fullName = details.getFullName();
+            email = details.getEmail();
+            role = details.getRole();
+        } else {
+            AuthResponse base = resolveCurrentUser(auth.getName());
+            userId = base.id();
+            username = base.username();
+            fullName = base.fullName();
+            email = base.email();
+            role = base.role();
         }
 
-        AuthResponse base = resolveCurrentUser(auth.getName());
-        return new AuthResponse(base.id(), base.username(), base.fullName(), base.email(), base.role(), token);
+        String token = tokenService.generateToken(username, role, userId);
+        tokenService.registerSessionToken(sessionId, username, role, userId);
+
+        return new AuthResponse(userId, username, fullName, email, role, token);
     }
 
     public AuthResponse resolveCurrentUser(String loginId) {

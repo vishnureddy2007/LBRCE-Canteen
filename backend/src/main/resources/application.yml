@@ -14,8 +14,8 @@ server:
       timeout: 24h
       cookie:
         name: LBRCESESSION
-        same-site: ${COOKIE_SAME_SITE:lax}
-        secure: ${COOKIE_SECURE:false}
+        same-site: ${COOKIE_SAME_SITE:none}
+        secure: ${COOKIE_SECURE:true}
         http-only: true
 
 spring:

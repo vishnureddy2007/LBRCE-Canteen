@@ -40,6 +40,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final com.lbrce.canteen.security.SessionTokenFilter sessionTokenFilter;
 
     @Value("${app.cors.allowed-origins:}")
     private String allowedOrigins;
@@ -50,8 +51,10 @@ public class SecurityConfig {
     @Value("${server.servlet.session.cookie.secure:true}")
     private String cookieSecure;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService,
+                          com.lbrce.canteen.security.SessionTokenFilter sessionTokenFilter) {
         this.userDetailsService = userDetailsService;
+        this.sessionTokenFilter = sessionTokenFilter;
     }
 
     @Bean
@@ -171,8 +174,18 @@ public class SecurityConfig {
                     })
                     .invalidateHttpSession(true)
             )
+            .addFilterBefore(sessionTokenFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
             .authenticationProvider(authenticationProvider());
 
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.boot.web.servlet.FilterRegistrationBean<com.lbrce.canteen.security.SessionTokenFilter> sessionTokenFilterRegistration(
+            com.lbrce.canteen.security.SessionTokenFilter filter) {
+        org.springframework.boot.web.servlet.FilterRegistrationBean<com.lbrce.canteen.security.SessionTokenFilter> registration =
+                new org.springframework.boot.web.servlet.FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 }

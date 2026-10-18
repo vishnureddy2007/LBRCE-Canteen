@@ -57,7 +57,9 @@ public class DtoMapper {
                 matchedImage = "/uploads/veg_manchuria.png";
             } else if (name.contains("chicken noodles")) {
                 matchedImage = "/uploads/chicken_noodles.png";
-            } else if (name.contains("veg noodles") || name.contains("noodles") || name.contains("maggi")) {
+            } else if (name.contains("maggi")) {
+                matchedImage = "/uploads/masala_maggi.png";
+            } else if (name.contains("veg noodles") || name.contains("noodles")) {
                 matchedImage = "/uploads/veg_noodles.png";
             } else if (name.contains("egg puff") || name.contains("puff")) {
                 matchedImage = "/uploads/egg_puff.png";

@@ -57,6 +57,19 @@ public class OrderService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new NotFoundException("Student not found: " + studentId));
 
+        // Duplicate-submission protection: prevent duplicate orders caused by double-clicking or rapid retries
+        Instant fiveSecondsAgo = Instant.now().minusSeconds(5);
+        Page<Order> recent = orderRepository.findByStudent_IdOrderByPlacedAtDesc(studentId, org.springframework.data.domain.PageRequest.of(0, 1));
+        if (!recent.isEmpty()) {
+            Order last = recent.getContent().get(0);
+            if (last.getStatus() == Order.Status.PLACED
+                    && last.getPlacedAt() != null
+                    && last.getPlacedAt().isAfter(fiveSecondsAgo)
+                    && isSameOrderItems(last, req.items())) {
+                return mapper.toOrder(last);
+            }
+        }
+
         Order order = new Order();
         order.setStudent(student);
         order.setStatus(Order.Status.PLACED);
@@ -236,5 +249,23 @@ public class OrderService {
         String date = day.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String suffix = String.format("%03d", java.util.concurrent.ThreadLocalRandom.current().nextInt(1000));
         return String.format("ORD-%s-%04d-%s", date, seq, suffix);
+    }
+
+    private boolean isSameOrderItems(Order existingOrder, List<com.lbrce.canteen.dto.OrderLineRequest> requestedItems) {
+        if (existingOrder.getItems() == null || requestedItems == null) {
+            return false;
+        }
+        if (existingOrder.getItems().size() != requestedItems.size()) {
+            return false;
+        }
+        for (var reqItem : requestedItems) {
+            boolean found = existingOrder.getItems().stream().anyMatch(oi ->
+                    oi.getFoodItem() != null
+                            && oi.getFoodItem().getId().equals(reqItem.foodId())
+                            && oi.getQuantity().equals(reqItem.quantity())
+            );
+            if (!found) return false;
+        }
+        return true;
     }
 }

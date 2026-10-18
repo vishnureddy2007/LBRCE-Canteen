@@ -5,24 +5,38 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 /**
- * Enables token-based fallback authentication for cross-domain or cross-site environments
- * where third-party browsers (Chrome, Safari) block SameSite session cookies.
+ * Filter that authenticates requests bearing an 'X-Auth-Token' or 'Authorization: Bearer <token>'
+ * header.
  *
- * If a request carries an 'X-Auth-Token' or 'Authorization: Bearer <sessionId>' header,
- * this filter routes session lookup directly to that session id so the SecurityContext
- * is seamlessly loaded even without cookies.
+ * <p>Enables reliable cross-domain and third-party-cookie-independent authentication
+ * for clients hosted on Vercel or mobile browsers.</p>
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SessionTokenFilter extends OncePerRequestFilter {
+
+    private final TokenService tokenService;
+    private final CustomUserDetailsService userDetailsService;
+
+    public SessionTokenFilter(TokenService tokenService, CustomUserDetailsService userDetailsService) {
+        this.tokenService = tokenService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -36,11 +50,37 @@ public class SessionTokenFilter extends OncePerRequestFilter {
         }
 
         if (token != null && !token.isBlank()) {
-            final String sessionId = token;
+            final String rawToken = token;
+
+            // Authenticate directly if not already authenticated
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                TokenService.TokenPayload payload = tokenService.parseAndValidate(rawToken);
+                if (payload != null) {
+                    try {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(payload.username());
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                        SecurityContext context = SecurityContextHolder.createEmptyContext();
+                        context.setAuthentication(authentication);
+                        SecurityContextHolder.setContext(context);
+
+                        HttpSession session = request.getSession(false);
+                        if (session != null) {
+                            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+                        }
+                    } catch (Exception e) {
+                        // User not found or inactive — allow chain to continue as anonymous
+                    }
+                }
+            }
+
+            // Also wrap the request for session id compatibility
             HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request) {
                 @Override
                 public String getRequestedSessionId() {
-                    return sessionId;
+                    return rawToken;
                 }
 
                 @Override

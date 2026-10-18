@@ -20,7 +20,7 @@ export default function Checkout() {
   const [busy, setBusy]   = useState(false);
 
   const placeOrder = async () => {
-    if (items.length === 0) return;
+    if (items.length === 0 || busy) return;
     setBusy(true);
     try {
       const order = await api.post('/orders', {
